@@ -1,4 +1,4 @@
-public class Creature extends Entity {
+public abstract class Creature extends Entity {
     private int speed;
     private int hunger;
     

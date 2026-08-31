@@ -27,4 +27,8 @@ public class Grass extends Entity{
     public void setEaten(boolean isEaten){
         this.isEaten = isEaten;
     }
+
+    @Override
+    public void update(){
+    }
 }

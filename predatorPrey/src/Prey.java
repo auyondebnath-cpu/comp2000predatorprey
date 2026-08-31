@@ -18,5 +18,9 @@ public class Prey extends Creature {
 
     }
 
+    @Override
+    public void update(){
+        setX(getX() + getSpeed());
+    }
 
 }

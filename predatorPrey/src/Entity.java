@@ -1,4 +1,4 @@
-public class Entity {
+public abstract class Entity {
      private int x;
      private int y; 
      private boolean isFood;
@@ -28,4 +28,6 @@ public class Entity {
      public void setY(int y){
         this.y = y;
      }
+
+     public abstract void update();
 }
