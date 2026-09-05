@@ -7,7 +7,14 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         SimulationPanel simPanel = new SimulationPanel();
-        Timer timer = new Timer(33, e -> simPanel.repaint());
+        Simulation sim = new Simulation();
+        sim.addEntity(new Predator(2, 100, 50, 50));
+        sim.addEntity(new Prey(3, 100, false, 200, 200));
+        simPanel.setEntities(sim.getEntities());
+        Timer timer = new Timer(33, e -> {
+            sim.tick();
+            simPanel.repaint();
+        });
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> timer.start());
