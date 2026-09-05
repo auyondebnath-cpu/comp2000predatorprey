@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.BorderLayout;
 import javax.swing.*;
 
 public class App {
@@ -7,9 +7,12 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         SimulationPanel simPanel = new SimulationPanel();
+        Timer timer = new Timer(33, e -> simPanel.repaint());
 
         JButton startButton = new JButton("Start");
+        startButton.addActionListener(e -> timer.start());
         JButton pauseButton = new JButton("Pause");
+        pauseButton.addActionListener(e -> timer.stop());
         JButton resetButton = new JButton("Reset");
 
         JPanel controlPanel = new JPanel();
