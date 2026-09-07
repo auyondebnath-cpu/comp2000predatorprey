@@ -6,6 +6,6 @@ public class Predator extends Creature {
 
     @Override
     public void update(){
-        setX(getX() + getSpeed());
+        moveWithBounce(800, 600);
     }
 }
