@@ -21,6 +21,11 @@ public class App {
         JButton pauseButton = new JButton("Pause");
         pauseButton.addActionListener(e -> timer.stop());
         JButton resetButton = new JButton("Reset");
+        resetButton.addActionListener(e -> {
+            timer.stop();
+            sim.reset();
+            simPanel.repaint();
+        });
 
         JPanel controlPanel = new JPanel();
         controlPanel.add(startButton);

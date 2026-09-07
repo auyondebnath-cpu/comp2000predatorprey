@@ -21,4 +21,11 @@ public class Simulation {
             entity.update();
         }
     }
+
+    public void reset(){
+        for(Entity entity: entities){
+            entity.setX(entity.getOriginalX());
+            entity.setY(entity.getOriginalY());
+        }
+    }
 }

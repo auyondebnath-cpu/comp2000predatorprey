@@ -2,11 +2,23 @@ public abstract class Entity {
      private int x;
      private int y; 
      private boolean isFood;
+     private final int originalX;
+     private final int originalY;
 
      public Entity(int x, int y, boolean isFood) {
          this.x = x;
          this.y = y;
+         this.originalX = x;
+         this.originalY = y;
          this.isFood = isFood;
+     }
+
+     public int getOriginalX(){
+      return originalX;
+     }
+
+     public int getOriginalY(){
+      return originalY;
      }
 
      public int getX(){
