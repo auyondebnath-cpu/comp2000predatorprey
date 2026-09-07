@@ -16,6 +16,7 @@ public abstract class Creature extends Entity {
     }
 
     public void setSpeed(int speed){
+        validateSpeed(speed);
         this.speed = speed;
     }
 
@@ -24,7 +25,20 @@ public abstract class Creature extends Entity {
     }
 
     public void setHunger(int hunger){
+        validateHunger(hunger);
         this.hunger = hunger;
+    }
+
+    private void validateSpeed(int speed){
+        if(speed <=0){
+            throw new InvalidCreatureStateException("Speed must be positive, got: " + speed);
+        }
+    }
+
+    private void validateHunger(int hunger){
+        if(hunger<0){
+            throw new InvalidCreatureStateException("Hunger cannot be negative, got: "+ hunger);
+        }
     }
 
     public boolean isDead(){
