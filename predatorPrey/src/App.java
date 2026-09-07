@@ -8,8 +8,17 @@ public class App {
 
         SimulationPanel simPanel = new SimulationPanel();
         Simulation sim = new Simulation();
-        sim.addEntity(new Predator(2, 100, 50, 50));
-        sim.addEntity(new Prey(3, 100, false, 200, 200));
+        try {
+            sim.addEntity(new Predator(2, 100, 50, 50));
+            sim.addEntity(new Prey(3, 100, false, 200, 200));
+        } catch (InvalidCreatureStateException e) {
+            System.err.println("Failed to create initial entities: " + e.getMessage());
+            JOptionPane.showMessageDialog(frame, "Simulation could not start: "+ e.getMessage(),
+        "Initialization Error", JOptionPane.ERROR_MESSAGE);
+        } finally{
+            System.err.println("Entity setup attempt complete. Current entity count: " + sim.getEntities().size());
+        }
+        
         simPanel.setEntities(sim.getEntities());
         Timer timer = new Timer(33, e -> {
             sim.tick();
