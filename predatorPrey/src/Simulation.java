@@ -21,6 +21,19 @@ public class Simulation {
             entity.update();
         }
         entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
+
+        List<Prey> preyList = entities.stream().filter(e-> e instanceof Prey).map(e -> (Prey) e).toList();
+
+        List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e-> (Predator) e).toList();
+
+        for(Predator predator: predators){
+            for(Prey prey: preyList){
+                if(predator.isNear(prey, 15)){
+                    predator.setHunger(predator.getHunger()+50);
+                    prey.setHunger(0);
+                }
+            }
+        }
     }
 
     public void reset(){

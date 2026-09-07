@@ -42,4 +42,10 @@ public abstract class Entity {
      }
 
      public abstract void update();
+
+     public boolean isNear(Entity other, int range){
+      int dx = this.getX() - other.getX();
+      int dy = this.getY() - other.getY();
+      return Math.sqrt(dx*dx + dy*dy)<=range;
+     }
 }
