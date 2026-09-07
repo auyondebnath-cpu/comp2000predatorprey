@@ -27,6 +27,14 @@ public abstract class Creature extends Entity {
         this.hunger = hunger;
     }
 
+    public boolean isDead(){
+        return hunger <= 0;
+    }
+
+    protected void depleteHunger(){
+        hunger--;
+    }
+
     protected void moveWithBounce(int panelWidth, int panelHeight){
         int newX = getX() + dx*speed;
         int newY = getY() + dy*speed;

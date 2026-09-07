@@ -6,6 +6,7 @@ public class Predator extends Creature {
 
     @Override
     public void update(){
+        depleteHunger();
         moveWithBounce(800, 600);
     }
 }

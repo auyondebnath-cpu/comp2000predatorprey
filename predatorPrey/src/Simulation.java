@@ -20,6 +20,7 @@ public class Simulation {
         for(Entity entity : entities){
             entity.update();
         }
+        entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
     }
 
     public void reset(){
