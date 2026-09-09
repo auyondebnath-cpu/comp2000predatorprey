@@ -20,7 +20,6 @@ public class Simulation {
         for(Entity entity : entities){
             entity.update();
         }
-        entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
 
         List<Prey> preyList = entities.stream().filter(e-> e instanceof Prey).map(e -> (Prey) e).toList();
 
@@ -34,6 +33,21 @@ public class Simulation {
                 }
             }
         }
+
+        List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
+
+        for(Prey prey: preyList){
+            for(Grass grass: grassList){
+                if(prey.isNear(grass, 15) && grass.isEdible()){
+                    prey.setHunger(prey.getHunger() + 30);
+                    grass.setEaten(true);
+                }
+            }
+        }
+
+        entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
+
+        entities.removeIf(e -> e instanceof Grass && ((Grass) e).isEaten());
     }
 
     public void reset(){
