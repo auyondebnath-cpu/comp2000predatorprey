@@ -7,6 +7,8 @@ public abstract class Creature extends Entity {
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
         super(x, y, isFood);
+        validateSpeed(speed);
+        validateHunger(hunger);
         this.speed = speed;
         this.hunger = hunger;
     }
