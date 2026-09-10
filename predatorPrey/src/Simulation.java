@@ -72,7 +72,25 @@ public class Simulation {
     }
 
     private void advanceDay(){
+        List<Entity> newborns = new ArrayList<>();
 
+        for(Entity e: entities){
+            if(e instanceof Predator p){
+                p.onDayTick();
+                if(p.shouldReproduce(5)){
+                    newborns.add(new Predator(p.getSpeed(), 100, p.getX(), p.getY()));
+                }
+            } else if (e instanceof Prey p){
+                p.onDayTick();
+                if(p.shouldReproduce(3)){
+                    newborns.add(new Prey(p.getSpeed(), 100, false, p.getX(), p.getY()));
+                }
+            }
+        }
+
+        entities.removeIf(e -> e instanceof Creature c && c.isStarved(4));
+
+        entities.addAll(newborns);
     }
 
     public void reset(){

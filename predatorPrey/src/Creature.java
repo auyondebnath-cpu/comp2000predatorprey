@@ -87,4 +87,23 @@ public abstract class Creature extends Entity {
         setX(newX);
         setY(newY);
     }
+
+    public void onDayTick(){
+        if(fedToday){
+            daysSinceFed = 0;
+            fillMeter++;
+        } else {
+            daysSinceFed++;
+        }
+
+        fedToday = false;
+    }
+
+    public boolean shouldReproduce (int maxFillMeter){
+        if(fillMeter >= maxFillMeter){
+            fillMeter = 1;
+            return true;
+        }
+        return false;
+    }
 }
