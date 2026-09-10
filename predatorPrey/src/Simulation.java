@@ -37,25 +37,27 @@ public class Simulation {
 
         List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e-> (Predator) e).toList();
 
-        for(Predator predator: predators){
+        List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
+
+        for(Predator predator : predators){
             for(Prey prey: preyList){
                 if(!consumedPrey.contains(prey) && predator.isNear(prey, 15)){
                     predator.setHunger(predator.getHunger()+50);
+                    predator.setFedToday(true);
                     prey.setHunger(0);
                     consumedPrey.add(prey);
                 }
             }
         }
 
-        List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
-
-        for(Prey prey: preyList){
+        for (Prey prey: preyList){
             for(Grass grass: grassList){
                 if(prey.isNear(grass, 15) && grass.isEdible()){
                     prey.setHunger(prey.getHunger() + 30);
+                    prey.setFedToday(true);
                     grass.setEaten(true);
                 }
-            }
+            }        
         }
 
         entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
@@ -70,7 +72,7 @@ public class Simulation {
     }
 
     private void advanceDay(){
-        
+
     }
 
     public void reset(){
