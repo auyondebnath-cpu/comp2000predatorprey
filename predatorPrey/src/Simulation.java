@@ -60,8 +60,6 @@ public class Simulation {
             }        
         }
 
-        entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
-
         entities.removeIf(e -> e instanceof Grass && ((Grass) e).isEaten());
 
         tickCounter++;
