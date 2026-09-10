@@ -1,6 +1,7 @@
 public class Grass extends Entity{
     private int growthTimer;
     private boolean isEaten;
+    public static final int REGROW_TIME = 100;
 
     public Grass (int x, int y, int growthTimer){
         super(x, y, true);
@@ -29,6 +30,13 @@ public class Grass extends Entity{
     }
 
     @Override
-    public void update(){
+    public void update(int panelWidth, int panelHeight){
+        if(isEaten){
+            growthTimer--;
+            if(growthTimer <=0){
+                isEaten = false;
+                growthTimer = REGROW_TIME;
+            }
+        }
     }
 }

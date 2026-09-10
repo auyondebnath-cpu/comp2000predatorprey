@@ -7,10 +7,13 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         SimulationPanel simPanel = new SimulationPanel();
-        Simulation sim = new Simulation();
+        Simulation sim = new Simulation(simPanel);
         try {
             sim.addEntity(new Predator(2, 100, 50, 50));
             sim.addEntity(new Prey(3, 100, false, 200, 200));
+            sim.addEntity(new Grass(100, 100, 100));
+            sim.addEntity(new Grass(300, 400, 100));
+            sim.addEntity(new Grass(500, 150, 100));
         } catch (InvalidCreatureStateException e) {
             System.err.println("Failed to create initial entities: " + e.getMessage());
             JOptionPane.showMessageDialog(frame, "Simulation could not start: "+ e.getMessage(),

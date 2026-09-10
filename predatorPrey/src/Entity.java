@@ -41,7 +41,7 @@ public abstract class Entity {
         this.y = y;
      }
 
-     public abstract void update();
+     public abstract void update(int panelWidth, int panelHeigth);
 
      public boolean isNear(Entity other, int range){
       int dx = this.getX() - other.getX();
