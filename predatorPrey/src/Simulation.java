@@ -7,6 +7,8 @@ public class Simulation {
     private List<Entity> entities;
     private List<Entity> initialEntities = new ArrayList<>();
     private SimulationPanel panel;
+    private static final int TICKS_PER_DAY = 303;
+    private int tickCounter = 0;
 
     public Simulation(SimulationPanel panel){
         this.entities = new ArrayList<>();
@@ -59,6 +61,16 @@ public class Simulation {
         entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
 
         entities.removeIf(e -> e instanceof Grass && ((Grass) e).isEaten());
+
+        tickCounter++;
+        if(tickCounter >= TICKS_PER_DAY){
+            tickCounter = 0;
+            advanceDay();
+        }
+    }
+
+    private void advanceDay(){
+        
     }
 
     public void reset(){

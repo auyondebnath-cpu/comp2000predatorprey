@@ -3,6 +3,9 @@ public abstract class Creature extends Entity {
     private int hunger;
     private int dx =1;
     private int dy =1;
+    protected int daysSinceFed = 0;
+    protected int fillMeter = 1;
+    protected boolean fedToday = false;
     
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
@@ -29,6 +32,22 @@ public abstract class Creature extends Entity {
     public void setHunger(int hunger){
         validateHunger(hunger);
         this.hunger = hunger;
+    }
+
+    public int getDaysSinceFed(){
+        return daysSinceFed;
+    }
+
+    public int getFillMeter(){
+        return fillMeter;
+    }
+
+    public void setFedToday(boolean fedToday){
+        this.fedToday = fedToday;
+    }
+
+    public boolean isStarved(int maxUnfedDays){
+        return daysSinceFed>=maxUnfedDays;
     }
 
     private void validateSpeed(int speed){
