@@ -2,6 +2,8 @@ public class Grass extends Entity{
     private int growthTimer;
     private boolean isEaten;
     public static final int REGROW_TIME = 100;
+    private int daysUneaten = 0;
+    private boolean markedForRemoval = false;
 
     public Grass (int x, int y, int growthTimer){
         super(x, y, true);
@@ -27,6 +29,21 @@ public class Grass extends Entity{
 
     public void setEaten(boolean isEaten){
         this.isEaten = isEaten;
+    }
+
+    public boolean isMarkedForRemoval(){
+        return markedForRemoval;
+    }
+
+    public void onDayTick(){
+        if(isEaten){
+            return;
+        }
+
+        daysUneaten++;
+        if(daysUneaten >=2){
+            markedForRemoval = true;
+        }
     }
 
     @Override

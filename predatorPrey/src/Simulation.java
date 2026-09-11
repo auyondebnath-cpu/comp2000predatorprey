@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class Simulation {
@@ -9,6 +10,7 @@ public class Simulation {
     private SimulationPanel panel;
     private static final int TICKS_PER_DAY = 303;
     private int tickCounter = 0;
+    private Random random = new Random();
 
     public Simulation(SimulationPanel panel){
         this.entities = new ArrayList<>();
@@ -83,11 +85,20 @@ public class Simulation {
                 if(p.shouldReproduce(3)){
                     newborns.add(new Prey(p.getSpeed(), 100, false, p.getX(), p.getY()));
                 }
+            } else if(e instanceof Grass g){
+                g.onDayTick();
             }
         }
 
         entities.removeIf(e -> e instanceof Creature c && c.isStarved(4));
 
+        entities.removeIf(e -> e instanceof Grass g && g.isMarkedForRemoval());
+
+        int newGrassCount = 5 + random.nextInt(6);
+
+        for(int i =0; i<newGrassCount; i++){
+            newborns.add(new Grass(random.nextInt(panel.getWidth()), random.nextInt(panel.getHeight()), 0));
+        }
         entities.addAll(newborns);
     }
 

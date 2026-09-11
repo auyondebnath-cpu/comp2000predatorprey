@@ -25,7 +25,7 @@ public class SimulationPanel extends JPanel{
                 g.setColor(Color.BLACK);
             }
 
-            g.fillOval(entity.getX(), entity.getY(), 10, 10);
+            g.fillOval(entity.getX(), entity.getY(), 30, 30);
         }
     }
 }
