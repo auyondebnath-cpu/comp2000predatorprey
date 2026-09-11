@@ -6,6 +6,10 @@ public class Predator extends Creature {
 
     @Override
     public void update(int panelWidth, int panelHeight){
-        moveWithBounce(panelWidth, panelHeight);
+        if (target != null) {
+            moveTowards(target);
+        } else {
+            moveWithBounce(panelWidth, panelHeight);
+        }
     }
 }

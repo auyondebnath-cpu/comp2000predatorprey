@@ -27,6 +27,22 @@ public class Simulation {
     }
 
     public void tick(){
+        List<Prey> preyList = entities.stream().filter(e-> e instanceof Prey).map(e -> (Prey) e).toList();
+
+        List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e-> (Predator) e).toList();
+
+        List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
+
+        for(Predator predator : predators){
+            Entity nearestPrey = findNearest(predator, preyList, 100);
+            predator.setTarget(nearestPrey);
+        }
+
+        for(Prey prey : preyList){
+            Entity nearestGrass = findNearest(prey, grassList, 100);
+            prey.setTarget(nearestGrass);
+        }
+
         int width = panel.getWidth();
         int height = panel.getHeight();
         for(Entity entity : entities){
@@ -35,12 +51,7 @@ public class Simulation {
 
         Set<Prey> consumedPrey = new HashSet<>();
 
-        List<Prey> preyList = entities.stream().filter(e-> e instanceof Prey).map(e -> (Prey) e).toList();
-
-        List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e-> (Predator) e).toList();
-
-        List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
-
+        
         for(Predator predator : predators){
             for(Prey prey: preyList){
                 if(!consumedPrey.contains(prey) && predator.isNear(prey, 15)){
@@ -115,5 +126,20 @@ public class Simulation {
                 g.setEaten(false);
             }
         }
+    }
+
+    private Entity findNearest (Entity from, List<? extends Entity> candidates, int range){
+        Entity nearest = null;
+        double nearestDist = Double.MAX_VALUE;
+        for(Entity candidate : candidates){
+            double dx = from.getX() - candidate.getX();
+            double dy = from.getY() - candidate.getY();
+            double dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist<= range && dist <nearestDist){
+                nearest = candidate;
+                nearestDist = dist;
+            }
+        }
+        return nearest;
     }
 }

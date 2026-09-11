@@ -6,6 +6,7 @@ public abstract class Creature extends Entity {
     protected int daysSinceFed = 0;
     protected int fillMeter = 1;
     protected boolean fedToday = false;
+    protected Entity target;
     
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
@@ -70,6 +71,10 @@ public abstract class Creature extends Entity {
         hunger--;
     }
 
+    public void setTarget (Entity target){
+        this.target = target;
+    }
+
     protected void moveWithBounce(int panelWidth, int panelHeight){
         int newX = getX() + dx*speed;
         int newY = getY() + dy*speed;
@@ -105,5 +110,21 @@ public abstract class Creature extends Entity {
             return true;
         }
         return false;
+    }
+
+    protected void moveTowards(Entity target){
+        double diffX = target.getX() - getX();
+        double diffY = target.getY() - getY();
+        double distance = Math.sqrt(diffX*diffX + diffY*diffY);
+
+        if(distance == 0){
+            return;
+        }
+
+        double stepX = (diffX/distance) * getSpeed();
+        double stepY = (diffY/distance) * getSpeed();
+
+        setX((int)(getX() + stepX));
+        setY((int)(getY() + stepY));
     }
 }
