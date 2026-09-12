@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 public class SimulationPanel extends JPanel{
     private List<Entity> entities = new ArrayList<>();
 
-    private static final int ICON_SIZE = 70;
+    private static final int ICON_SIZE = 65;
     private static final int GRASS_SIZE = 30;
 
     private final Image predatorIcon = loadAnimatedIcon("predatorPrey/resources/tiger.gif");
