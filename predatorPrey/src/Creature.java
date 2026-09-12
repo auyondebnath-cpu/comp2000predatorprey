@@ -8,8 +8,7 @@ public abstract class Creature extends Entity {
     protected Entity target;
     private int lastX;
     private int lastY;
-   
-
+    private boolean facingRight = true;
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
         super(x, y, isFood);
@@ -26,6 +25,17 @@ public abstract class Creature extends Entity {
         return speed;
     }
 
+    public boolean isFacingRight(){
+        return facingRight;
+    }
+
+    protected void updateFacing (int moveX){
+        if(moveX>0){
+            facingRight = true;
+        } else if(moveX<0){
+            facingRight = false;
+        }
+    }
 
     public void setSpeed(int speed){
         validateSpeed(speed);
@@ -114,7 +124,7 @@ public abstract class Creature extends Entity {
             newY = getY() + dy*speed;
         }
 
-
+        updateFacing(newX - getX());
         setX(newX);
         setY(newY);
     }
@@ -160,6 +170,7 @@ public abstract class Creature extends Entity {
         if (moveX == 0 && Math.abs(stepX) > 0.1) moveX = (int) Math.signum(stepX);
         if (moveY == 0 && Math.abs(stepY) > 0.1) moveY = (int) Math.signum(stepY);
 
+        updateFacing(moveX);
         setX(getX() + moveX);
         setY(getY() + moveY);
     }
@@ -194,6 +205,7 @@ public abstract class Creature extends Entity {
         if (moveX == 0 && Math.abs(stepX) > 0.1) moveX = (int) Math.signum(stepX);
         if (moveY == 0 && Math.abs(stepY) > 0.1) moveY = (int) Math.signum(stepY);
 
+        updateFacing(moveX);
         setX(getX() + moveX);
         setY(getY() + moveY);
     }
@@ -208,5 +220,6 @@ public abstract class Creature extends Entity {
         this.dy = 1;
         this.lastX = startX;
         this.lastY = startY;
+        this.facingRight = true;
     }   
 }
