@@ -9,8 +9,10 @@ public class App {
         SimulationPanel simPanel = new SimulationPanel();
         Simulation sim = new Simulation(simPanel);
         try {
-            sim.addEntity(new Predator(2, 100, 50, 50));
+            sim.addEntity(new Predator(3, 100, 50, 50));
             sim.addEntity(new Prey(3, 100, false, 200, 200));
+            sim.addEntity(new Predator(3, 100, 350, 150));
+            sim.addEntity(new Prey(3, 100, false, 250, 250));
             sim.addEntity(new Grass(100, 100, 100));
             sim.addEntity(new Grass(300, 400, 100));
             sim.addEntity(new Grass(500, 150, 100));

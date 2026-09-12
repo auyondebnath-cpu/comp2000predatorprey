@@ -34,7 +34,7 @@ public class Simulation {
         List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
 
         for(Predator predator : predators){
-            Entity nearestPrey = findNearest(predator, preyList, 100);
+            Entity nearestPrey = findNearest(predator, preyList, 200);
             predator.setTarget(nearestPrey);
         }
 
@@ -54,7 +54,7 @@ public class Simulation {
         
         for(Predator predator : predators){
             for(Prey prey: preyList){
-                if(!consumedPrey.contains(prey) && predator.isNear(prey, 15)){
+                if(!consumedPrey.contains(prey) && predator.isNear(prey, 25)){
                     predator.setHunger(predator.getHunger()+50);
                     predator.setFedToday(true);
                     prey.setHunger(0);
@@ -65,13 +65,15 @@ public class Simulation {
 
         for (Prey prey: preyList){
             for(Grass grass: grassList){
-                if(prey.isNear(grass, 15) && grass.isEdible()){
+                if(prey.isNear(grass, 35) && grass.isEdible()){
                     prey.setHunger(prey.getHunger() + 30);
                     prey.setFedToday(true);
                     grass.setEaten(true);
                 }
             }        
         }
+
+        entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
 
         entities.removeIf(e -> e instanceof Grass && ((Grass) e).isEaten());
 

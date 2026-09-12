@@ -7,6 +7,8 @@ public abstract class Creature extends Entity {
     protected int fillMeter = 1;
     protected boolean fedToday = false;
     protected Entity target;
+    private int lastX;
+    private int lastY;
     
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
@@ -15,6 +17,8 @@ public abstract class Creature extends Entity {
         validateHunger(hunger);
         this.speed = speed;
         this.hunger = hunger;
+        this.lastX = x;
+        this.lastY = y;
     }
 
     public int getSpeed(){
@@ -75,6 +79,19 @@ public abstract class Creature extends Entity {
         this.target = target;
     }
 
+    public int getVelocityX(){
+        return getX() - lastX;
+    }
+
+    public int getVelocityY(){
+        return getY() - lastY;
+    }
+
+    protected void recordPosition(){
+        lastX = getX();
+        lastY = getY();
+    }
+
     protected void moveWithBounce(int panelWidth, int panelHeight){
         int newX = getX() + dx*speed;
         int newY = getY() + dy*speed;
@@ -121,8 +138,34 @@ public abstract class Creature extends Entity {
             return;
         }
 
-        double stepX = (diffX/distance) * getSpeed();
-        double stepY = (diffY/distance) * getSpeed();
+        double moveDistance = Math.min(getSpeed(), distance);
+        double stepX = (diffX/distance) * moveDistance;
+        double stepY = (diffY/distance) * moveDistance;
+
+        setX((int)(getX() + stepX));
+        setY((int)(getY() + stepY));
+    }
+
+    protected void pursue (Creature target){
+        int velX = target.getVelocityX();
+        int velY = target.getVelocityY();
+
+        double distance = Math.sqrt(Math.pow(target.getX() - getX(), 2) + Math.pow(target.getY() - getY(), 2));
+
+        double lookAheadTicks = distance/getSpeed();
+
+        int predictedX = target.getX() + (int)(velX * lookAheadTicks);
+        int predictedY = target.getY() + (int)(velY * lookAheadTicks);
+
+        double diffX = predictedX - getX();
+        double diffY = predictedY - getY();
+        double dist = Math.sqrt(diffX*diffX + diffY*diffY);
+
+        if(dist == 0) return;
+
+        double moveDistance = Math.min(getSpeed(), dist);
+        double stepX = (diffX/dist) * moveDistance;
+        double stepY = (diffY/dist) * moveDistance;
 
         setX((int)(getX() + stepX));
         setY((int)(getY() + stepY));
