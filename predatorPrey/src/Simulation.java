@@ -9,53 +9,72 @@ public class Simulation {
     private List<Entity> initialEntities = new ArrayList<>();
     private SimulationPanel panel;
     private static final int TICKS_PER_DAY = 303;
+    private static final int PREDATOR_DETECTION_RANGE = 150;
+    private static final int PREDATOR_SEPARATION = 30;
+    private static final int PREY_SEPARATION = 20;
     private int tickCounter = 0;
     private Random random = new Random();
 
-    public Simulation(SimulationPanel panel){
+    public Simulation(SimulationPanel panel) {
         this.entities = new ArrayList<>();
         this.panel = panel;
     }
 
-    public List<Entity> getEntities(){
+    public List<Entity> getEntities() {
         return entities;
     }
 
-    public void addEntity(Entity entity){
+    public void addEntity(Entity entity) {
         entities.add(entity);
         initialEntities.add(entity);
     }
 
-    public void tick(){
-        List<Prey> preyList = entities.stream().filter(e-> e instanceof Prey).map(e -> (Prey) e).toList();
+    public void tick() {
+        List<Prey> preyList = entities.stream().filter(e -> e instanceof Prey).map(e -> (Prey) e).toList();
 
-        List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e-> (Predator) e).toList();
+        List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e -> (Predator) e).toList();
 
         List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
 
-        for(Predator predator : predators){
+        for (Predator predator : predators) {
             Entity nearestPrey = findNearest(predator, preyList, 200);
             predator.setTarget(nearestPrey);
         }
 
-        for(Prey prey : preyList){
-            Entity nearestGrass = findNearest(prey, grassList, 100);
-            prey.setTarget(nearestGrass);
+        for (Prey prey : preyList) {
+            // Fleeing takes priority: only look for food if no predator is nearby.
+            Entity nearestPredator = findNearest(prey, predators, PREDATOR_DETECTION_RANGE);
+            prey.setThreat(nearestPredator);
+
+            if (nearestPredator == null) {
+                Entity nearestGrass = findNearest(prey, grassList, 100);
+                prey.setTarget(nearestGrass);
+            } else {
+                prey.setTarget(null);
+            }
         }
 
         int width = panel.getWidth();
         int height = panel.getHeight();
-        for(Entity entity : entities){
+        for (Entity entity : entities) {
             entity.update(width, height);
+        }
+
+        // Separation pass prevents same-type creatures from stacking on
+        // top of each other after converging on a shared target.
+        for (Predator predator : predators) {
+            predator.separateFrom(predators, PREDATOR_SEPARATION);
+        }
+        for (Prey prey : preyList) {
+            prey.separateFrom(preyList, PREY_SEPARATION);
         }
 
         Set<Prey> consumedPrey = new HashSet<>();
 
-        
-        for(Predator predator : predators){
-            for(Prey prey: preyList){
-                if(!consumedPrey.contains(prey) && predator.isNear(prey, 25)){
-                    predator.setHunger(predator.getHunger()+50);
+        for (Predator predator : predators) {
+            for (Prey prey : preyList) {
+                if (!consumedPrey.contains(prey) && predator.isNear(prey, 25)) {
+                    predator.setHunger(predator.getHunger() + 50);
                     predator.setFedToday(true);
                     prey.setHunger(0);
                     consumedPrey.add(prey);
@@ -63,14 +82,18 @@ public class Simulation {
             }
         }
 
-        for (Prey prey: preyList){
-            for(Grass grass: grassList){
-                if(prey.isNear(grass, 35) && grass.isEdible()){
+        Set<Grass> consumedGrass = new HashSet<>();
+
+        for (Prey prey : preyList) {
+            for (Grass grass : grassList) {
+                if (!consumedGrass.contains(grass) && prey.isNear(grass, 35) && grass.isEdible()) {
                     prey.setHunger(prey.getHunger() + 30);
                     prey.setFedToday(true);
                     grass.setEaten(true);
+                    consumedGrass.add(grass);
+                    break;
                 }
-            }        
+            }
         }
 
         entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
@@ -78,27 +101,27 @@ public class Simulation {
         entities.removeIf(e -> e instanceof Grass && ((Grass) e).isEaten());
 
         tickCounter++;
-        if(tickCounter >= TICKS_PER_DAY){
+        if (tickCounter >= TICKS_PER_DAY) {
             tickCounter = 0;
             advanceDay();
         }
     }
 
-    private void advanceDay(){
+    private void advanceDay() {
         List<Entity> newborns = new ArrayList<>();
 
-        for(Entity e: entities){
-            if(e instanceof Predator p){
+        for (Entity e : entities) {
+            if (e instanceof Predator p) {
                 p.onDayTick();
-                if(p.shouldReproduce(5)){
+                if (p.shouldReproduce(5)) {
                     newborns.add(new Predator(p.getSpeed(), 100, p.getX(), p.getY()));
                 }
-            } else if (e instanceof Prey p){
+            } else if (e instanceof Prey p) {
                 p.onDayTick();
-                if(p.shouldReproduce(3)){
+                if (p.shouldReproduce(3)) {
                     newborns.add(new Prey(p.getSpeed(), 100, false, p.getX(), p.getY()));
                 }
-            } else if(e instanceof Grass g){
+            } else if (e instanceof Grass g) {
                 g.onDayTick();
             }
         }
@@ -109,35 +132,39 @@ public class Simulation {
 
         int newGrassCount = 5 + random.nextInt(6);
 
-        for(int i =0; i<newGrassCount; i++){
+        for (int i = 0; i < newGrassCount; i++) {
             newborns.add(new Grass(random.nextInt(panel.getWidth()), random.nextInt(panel.getHeight()), 0));
         }
         entities.addAll(newborns);
     }
 
-    public void reset(){
+    public void reset() {
         entities.clear();
         entities.addAll(initialEntities);
-        for(Entity entity: entities){
+        tickCounter = 0;
+        for (Entity entity : entities) {
             entity.setX(entity.getOriginalX());
             entity.setY(entity.getOriginalY());
-            if(entity instanceof Creature c){
+            if (entity instanceof Creature c) {
                 c.setHunger(100);
+                c.setFedToday(false);
+                c.setTarget(null);
+                c.setThreat(null);
             }
-            if(entity instanceof Grass g){
+            if (entity instanceof Grass g) {
                 g.setEaten(false);
             }
         }
     }
 
-    private Entity findNearest (Entity from, List<? extends Entity> candidates, int range){
+    private Entity findNearest(Entity from, List<? extends Entity> candidates, int range) {
         Entity nearest = null;
         double nearestDist = Double.MAX_VALUE;
-        for(Entity candidate : candidates){
+        for (Entity candidate : candidates) {
             double dx = from.getX() - candidate.getX();
             double dy = from.getY() - candidate.getY();
-            double dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist<= range && dist <nearestDist){
+            double dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist <= range && dist < nearestDist) {
                 nearest = candidate;
                 nearestDist = dist;
             }
