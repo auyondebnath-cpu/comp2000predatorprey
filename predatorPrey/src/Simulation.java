@@ -29,43 +29,94 @@ public class Simulation {
     }
 
 
-    public void tick(){
-        List<Prey> preyList = entities.stream().filter(e-> e instanceof Prey).map(e -> (Prey) e).toList();
+    public void tick() {
+        List<Prey> preyList = entities.stream()
+            .filter(e -> e instanceof Prey)
+            .map(e -> (Prey) e)
+            .toList();
 
+        List<Predator> predators = entities.stream()
+            .filter(e -> e instanceof Predator)
+            .map(e -> (Predator) e)
+            .toList();
 
-        List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e-> (Predator) e).toList();
+        List<Grass> grassList = entities.stream()
+            .filter(e -> e instanceof Grass)
+            .map(e -> (Grass) e)
+            .filter(Grass::isEdible)
+            .toList();
 
-
-        List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
-
-
-        for(Predator predator : predators){
+        for (Predator predator : predators) {
             Entity nearestPrey = findNearest(predator, preyList, 200);
             predator.setTarget(nearestPrey);
         }
 
-
-        for(Prey prey : preyList){
+        for (Prey prey : preyList) {
             Entity nearestGrass = findNearest(prey, grassList, 100);
             prey.setTarget(nearestGrass);
         }
 
-
         int width = panel.getWidth();
         int height = panel.getHeight();
-        for(Entity entity : entities){
+        for (Entity entity : entities) {
             entity.update(width, height);
         }
 
+        // Anti-merging logic (Separation) for Prey
+        for (int i = 0; i < preyList.size(); i++) {
+            for (int j = i + 1; j < preyList.size(); j++) {
+                Prey p1 = preyList.get(i);
+                Prey p2 = preyList.get(j);
+                
+                if (p1.isNear(p2, 15)) {
+                    int dx = p1.getX() - p2.getX();
+                    int dy = p1.getY() - p2.getY();
+                    
+                    if (dx == 0 && dy == 0) {
+                        dx = random.nextBoolean() ? 1 : -1;
+                        dy = random.nextBoolean() ? 1 : -1;
+                    }
+                    
+                    p1.setX(p1.getX() + (int) Math.signum(dx) * 2);
+                    p1.setY(p1.getY() + (int) Math.signum(dy) * 2);
+                    
+                    p2.setX(p2.getX() - (int) Math.signum(dx) * 2);
+                    p2.setY(p2.getY() - (int) Math.signum(dy) * 2);
+                }
+            }
+        }
+
+        // Anti-merging logic (Separation) for Predators
+        for (int i = 0; i < predators.size(); i++) {
+            for (int j = i + 1; j < predators.size(); j++) {
+                Predator p1 = predators.get(i);
+                Predator p2 = predators.get(j);
+                
+                // If two predators overlap within 20 pixels, push them apart
+                if (p1.isNear(p2, 20)) {
+                    int dx = p1.getX() - p2.getX();
+                    int dy = p1.getY() - p2.getY();
+                    
+                    if (dx == 0 && dy == 0) {
+                        dx = random.nextBoolean() ? 1 : -1;
+                        dy = random.nextBoolean() ? 1 : -1;
+                    }
+                    
+                    p1.setX(p1.getX() + (int) Math.signum(dx) * 2);
+                    p1.setY(p1.getY() + (int) Math.signum(dy) * 2);
+                    
+                    p2.setX(p2.getX() - (int) Math.signum(dx) * 2);
+                    p2.setY(p2.getY() - (int) Math.signum(dy) * 2);
+                }
+            }
+        }
 
         Set<Prey> consumedPrey = new HashSet<>();
 
-
-       
-        for(Predator predator : predators){
-            for(Prey prey: preyList){
-                if(!consumedPrey.contains(prey) && predator.isNear(prey, 25)){
-                    predator.setHunger(predator.getHunger()+50);
+        for (Predator predator : predators) {
+            for (Prey prey : preyList) {
+                if (!consumedPrey.contains(prey) && predator.isNear(prey, 35)) {
+                    predator.setHunger(predator.getHunger() + 50);
                     predator.setFedToday(true);
                     prey.setHunger(0);
                     consumedPrey.add(prey);
@@ -73,26 +124,21 @@ public class Simulation {
             }
         }
 
-
-        for (Prey prey: preyList){
-            for(Grass grass: grassList){
-                if(prey.isNear(grass, 35) && grass.isEdible()){
+        for (Prey prey : preyList) {
+            for (Grass grass : grassList) {
+                if (prey.isNear(grass, 35) && grass.isEdible()) {
                     prey.setHunger(prey.getHunger() + 30);
                     prey.setFedToday(true);
                     grass.setEaten(true);
                 }
-            }        
+            }
         }
 
-
+        // Remove dead creatures
         entities.removeIf(e -> e instanceof Creature && ((Creature) e).isDead());
 
-
-        entities.removeIf(e -> e instanceof Grass && ((Grass) e).isEaten());
-
-
         tickCounter++;
-        if(tickCounter >= TICKS_PER_DAY){
+        if (tickCounter >= TICKS_PER_DAY) {
             tickCounter = 0;
             advanceDay();
         }
