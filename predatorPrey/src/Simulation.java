@@ -148,39 +148,36 @@ public class Simulation {
     private void advanceDay(){
         List<Entity> newborns = new ArrayList<>();
 
-
         for(Entity e: entities){
             if(e instanceof Predator p){
                 p.onDayTick();
-                if(p.shouldReproduce(5)){
-                    newborns.add(new Predator(p.getSpeed(), 100, p.getX(), p.getY()));
+                if(p.shouldReproduce(4)){
+                    int offsetX = random.nextInt(21) - 10;
+                    int offsetY = random.nextInt(21) - 10;
+                    newborns.add(new Predator(p.getSpeed(), 100, p.getX() + offsetX, p.getY() + offsetY));
                 }
             } else if (e instanceof Prey p){
                 p.onDayTick();
                 if(p.shouldReproduce(3)){
-                    newborns.add(new Prey(p.getSpeed(), 100, false, p.getX(), p.getY()));
+                    int offsetX = random.nextInt(21) - 10;
+                    int offsetY = random.nextInt(21) - 10;
+                    newborns.add(new Prey(p.getSpeed(), 100, false, p.getX() + offsetX, p.getY() + offsetY));
                 }
             } else if(e instanceof Grass g){
                 g.onDayTick();
             }
         }
 
-
-        entities.removeIf(e -> e instanceof Creature c && c.isStarved(4));
-
-
+        entities.removeIf(e -> e instanceof Predator p && p.isStarved(-5));
+        entities.removeIf(e -> e instanceof Prey p && p.isStarved(-4));
         entities.removeIf(e -> e instanceof Grass g && g.isMarkedForRemoval());
 
-
         int newGrassCount = 5 + random.nextInt(6);
-
-
-        for(int i =0; i<newGrassCount; i++){
+        for(int i = 0; i < newGrassCount; i++){
             newborns.add(new Grass(random.nextInt(panel.getWidth()), random.nextInt(panel.getHeight()), 0));
         }
         entities.addAll(newborns);
     }
-
 
     public void reset(){
         entities.clear();

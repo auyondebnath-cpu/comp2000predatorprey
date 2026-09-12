@@ -3,8 +3,7 @@ public abstract class Creature extends Entity {
     private int hunger;
     private int dx =1;
     private int dy =1;
-    protected int daysSinceFed = 0;
-    protected int fillMeter = 1;
+    protected int energyMeter = 0;
     protected boolean fedToday = false;
     protected Entity target;
     private int lastX;
@@ -44,24 +43,13 @@ public abstract class Creature extends Entity {
         this.hunger = hunger;
     }
 
-
-    public int getDaysSinceFed(){
-        return daysSinceFed;
-    }
-
-
-    public int getFillMeter(){
-        return fillMeter;
-    }
-
-
     public void setFedToday(boolean fedToday){
         this.fedToday = fedToday;
     }
 
 
-    public boolean isStarved(int maxUnfedDays){
-        return daysSinceFed>=maxUnfedDays;
+    public boolean isStarved(int deathThreshold){
+        return energyMeter <= deathThreshold;
     }
 
 
@@ -134,20 +122,17 @@ public abstract class Creature extends Entity {
 
     public void onDayTick(){
         if(fedToday){
-            daysSinceFed = 0;
-            fillMeter++;
+            energyMeter++;
         } else {
-            daysSinceFed++;
+            energyMeter--;
         }
-
-
         fedToday = false;
     }
 
 
-    public boolean shouldReproduce (int maxFillMeter){
-        if(fillMeter >= maxFillMeter){
-            fillMeter = 1;
+    public boolean shouldReproduce (int reproduceThreshold){
+        if(energyMeter >= reproduceThreshold){
+            energyMeter = 0;
             return true;
         }
         return false;
