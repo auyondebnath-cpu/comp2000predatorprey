@@ -113,13 +113,13 @@ public abstract class Creature extends Entity {
         int newY = getY() + dy*speed;
 
 
-        if(newX<0 || newX>panelWidth){
+        if(newX<0 || newX>panelWidth-65){
             dx = -dx;
             newX = getX() + dx*speed;
         }
 
 
-        if(newY<0 || newY>panelHeight){
+        if(newY<0 || newY>panelHeight-65){
             dy = -dy;
             newY = getY() + dy*speed;
         }
