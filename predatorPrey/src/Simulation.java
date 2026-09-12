@@ -187,7 +187,7 @@ public class Simulation {
             entity.setX(entity.getOriginalX());
             entity.setY(entity.getOriginalY());
             if (entity instanceof Creature c) {
-                c.setHunger(100);
+                c.resetState(100, entity.getOriginalX(), entity.getOriginalY());
             }
             if (entity instanceof Grass g) {
                 g.setEaten(false);

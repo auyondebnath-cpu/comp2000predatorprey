@@ -197,4 +197,16 @@ public abstract class Creature extends Entity {
         setX(getX() + moveX);
         setY(getY() + moveY);
     }
+
+    public void resetState(int startHunger, int startX, int startY) {
+        validateHunger(startHunger);
+        this.hunger = startHunger;
+        this.energyMeter = 0;
+        this.fedToday = false;
+        this.target = null;
+        this.dx = 1;
+        this.dy = 1;
+        this.lastX = startX;
+        this.lastY = startY;
+    }   
 }
