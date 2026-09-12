@@ -2,8 +2,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 public class SimulationPanel extends JPanel{
     private List<Entity> entities = new ArrayList<>();
@@ -19,17 +22,26 @@ public class SimulationPanel extends JPanel{
         Image result = null;
         try {
             File file = new File(path);
-        } catch (Exception e) {
+            ImageIO.read(file);
+            ImageIcon icon = new ImageIcon(path);
+            result = icon.getImage();
+        } catch (IOException e) {
+            System.err.println("Failed to load animated icon ' " + path + "': " + e.getMessage());
+        } finally{
+            System.out.println("Finished icon load attempt for: " + path);
         }
-
         return result;
     }
 
     private Image loadStaticIcon(String path, int size){
         Image result = null;
         try {
-            
-        } catch (Exception e) {
+            Image raw = ImageIO.read(new File(path));
+            result = raw.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            System.err.println("Failed to load static icon '" + path + "': "+ e.getMessage());
+        } finally{
+            System.out.println("Finished icon load attempt for: "+ path);
         }
         return result;
     }
