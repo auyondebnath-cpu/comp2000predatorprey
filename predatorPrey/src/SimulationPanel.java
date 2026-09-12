@@ -3,7 +3,6 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
-
 public class SimulationPanel extends JPanel{
     private List<Entity> entities = new ArrayList<>();
 
