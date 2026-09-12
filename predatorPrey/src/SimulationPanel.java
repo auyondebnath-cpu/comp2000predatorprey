@@ -54,17 +54,33 @@ public class SimulationPanel extends JPanel{
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         for(Entity entity: entities){
+            Image icon;
+            int size;
+            Color fallbackColor;
             if(entity instanceof Predator){
-                g.setColor(Color.RED);
+                icon = predatorIcon;
+                size = ICON_SIZE;
+                fallbackColor=Color.RED;
             } else if(entity instanceof Prey){
-                g.setColor(Color.BLUE);
+                icon = preyIcon;
+                size = ICON_SIZE;
+                fallbackColor = Color.BLUE;
             } else if (entity instanceof Grass){
-                g.setColor(Color.GREEN);
+                icon = grassIcon;
+                size = GRASS_SIZE;
+                fallbackColor = Color.GREEN;
             } else{
-                g.setColor(Color.BLACK);
+                icon = null;
+                size = ICON_SIZE;
+                fallbackColor=Color.BLACK;
             }
 
-            g.fillOval(entity.getX(), entity.getY(), 30, 30);
+            if(icon!=null){
+                g.drawImage(icon, entity.getX(), entity.getY(), size, size, this); 
+            } else{
+                g.setColor(fallbackColor);
+                g.fillOval(entity.getX(), entity.getY(), size, size);
+            }
         }
     }
 }
