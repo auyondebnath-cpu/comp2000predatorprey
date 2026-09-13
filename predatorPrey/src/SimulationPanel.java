@@ -18,6 +18,7 @@ public class SimulationPanel extends JPanel{
     private final Image predatorIcon = loadAnimatedIcon("predatorPrey/resources/tiger.gif");
     private final Image preyIcon = loadAnimatedIcon("predatorPrey/resources/deer.gif");
     private final Image grassIcon = loadStaticIcon("predatorPrey/resources/grass.png", GRASS_SIZE);
+    private final Image backgroundImage = loadBackground("predatorPrey/resources/background.jpg");
 
     private Image loadAnimatedIcon (String path){
         Image result = null;
@@ -51,10 +52,28 @@ public class SimulationPanel extends JPanel{
         this.entities = entities;
     }
 
+    private Image loadBackground(String path){
+        Image result = null;
+        try{
+            result = ImageIO.read(new File(path));
+        } catch(IOException e) {
+            System.err.println("Failed to load background '" + path + "': " + e.getMessage());
+        }
+        return result;
+    }
+
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+
+        if (backgroundImage != null) {
+            g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        } else {
+            g2d.setColor(new Color(200, 230, 200));
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+    }
+
         for(Entity entity: entities){
             Image icon;
             int size;
