@@ -4,7 +4,7 @@ public class Predator extends Creature {
         super(speed, hunger, false, x, y);
     }
 
-    protected void pursue(Creature target, int panelHeight) {
+    protected void pursue(Creature target, int panelWidth, int panelHeight) {
         int velX = target.getVelocityX();
         int velY = target.getVelocityY();
 
@@ -34,7 +34,7 @@ public class Predator extends Creature {
         if (moveY == 0 && Math.abs(stepY) > 0.1) moveY = (int) Math.signum(stepY);
 
         updateFacing(moveX);
-        setX(getX() + moveX);
+        setX(clampToWidth(getX() + moveX, panelWidth));
         setY(clampToGround(getY()+moveY, panelHeight));
     }
 
@@ -42,9 +42,9 @@ public class Predator extends Creature {
     @Override
     public void update(int panelWidth, int panelHeight){
         if (target instanceof Prey c) {
-            pursue(c, panelHeight);
+            pursue(c, panelWidth, panelHeight);
         } else if (target != null) {
-            moveTowards(target, panelHeight);
+            moveTowards(target, panelWidth, panelHeight);
         } else {
             moveWithBounce(panelWidth, panelHeight);
         }

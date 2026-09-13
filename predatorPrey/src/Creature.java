@@ -156,8 +156,12 @@ public abstract class Creature extends Entity {
         return Math.max(groundTop, y);
     }
 
+    protected int clampToWidth(int x, int panelWidth) {
+        return Math.max(0, Math.min(x, panelWidth - 65));
+    }
 
-    protected void moveTowards(Entity target, int panelHeight) {
+
+    protected void moveTowards(Entity target, int panelWidth, int panelHeight) {
         double diffX = target.getX() - getX();
         double diffY = target.getY() - getY();
         double distance = Math.sqrt(diffX * diffX + diffY * diffY);
@@ -179,7 +183,7 @@ public abstract class Creature extends Entity {
         if (moveY == 0 && Math.abs(stepY) > 0.1) moveY = (int) Math.signum(stepY);
 
         updateFacing(moveX);
-        setX(getX() + moveX);
+        setX(clampToWidth(getX() + moveX, panelWidth));
         setY(clampToGround(getY()+moveY, panelHeight));
     }
 

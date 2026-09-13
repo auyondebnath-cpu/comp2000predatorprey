@@ -25,7 +25,7 @@ public class Prey extends Creature {
         this.fleeTarget = fleeTarget;
     }
 
-    private void flee(Entity threat, int panelHeight){
+    private void flee(Entity threat, int panelWidth, int panelHeight){
         double diffX = getX() - threat.getX();
         double diffY = getY() - threat.getY();
         double distance = Math.sqrt(diffX*diffX + diffY * diffY);
@@ -47,17 +47,17 @@ public class Prey extends Creature {
         if(moveY ==0 && Math.abs(stepY) > 0.1) moveY = (int) Math.signum(stepY);
 
         updateFacing(moveX);
-        setX(getX() + moveX);
+        setX(clampToWidth(getX() + moveX, panelWidth));
         setY(clampToGround(getY() + moveY, panelHeight));
     }
 
     @Override
     public void update(int panelWidth, int panelHeight){
         if (fleeTicksRemaining > 0 && fleeTarget != null) {
-            flee(fleeTarget, panelHeight);
+            flee(fleeTarget, panelWidth, panelHeight);
             fleeTicksRemaining--;
         } else if (target != null) {
-            moveTowards(target, panelHeight);
+            moveTowards(target, panelWidth, panelHeight);
         } else{
             moveWithBounce(panelWidth, panelHeight);
         }
