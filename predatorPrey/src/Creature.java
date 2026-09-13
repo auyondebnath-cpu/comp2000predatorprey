@@ -109,6 +109,7 @@ public abstract class Creature extends Entity {
 
 
     protected void moveWithBounce(int panelWidth, int panelHeight){
+        int groundTop = panelHeight/5;
         int newX = getX() + dx*speed;
         int newY = getY() + dy*speed;
 
@@ -116,12 +117,14 @@ public abstract class Creature extends Entity {
         if(newX<0 || newX>panelWidth-65){
             dx = -dx;
             newX = getX() + dx*speed;
+            newX = Math.max(0, Math.min(newX, panelWidth-65));
         }
 
 
-        if(newY<0 || newY>panelHeight-65){
+        if(newY<groundTop || newY>panelHeight-65){
             dy = -dy;
             newY = getY() + dy*speed;
+            newY = Math.max(groundTop, Math.min(newY, panelHeight-65));
         }
 
         updateFacing(newX - getX());
@@ -148,8 +151,13 @@ public abstract class Creature extends Entity {
         return false;
     }
 
+    protected int clampToGround(int y, int panelHeight){
+        int groundTop = panelHeight/5;
+        return Math.max(groundTop, y);
+    }
 
-    protected void moveTowards(Entity target) {
+
+    protected void moveTowards(Entity target, int panelHeight) {
         double diffX = target.getX() - getX();
         double diffY = target.getY() - getY();
         double distance = Math.sqrt(diffX * diffX + diffY * diffY);
@@ -172,19 +180,18 @@ public abstract class Creature extends Entity {
 
         updateFacing(moveX);
         setX(getX() + moveX);
-        setY(getY() + moveY);
+        setY(clampToGround(getY()+moveY, panelHeight));
     }
 
-
-    protected void pursue(Creature target) {
+    protected void pursue(Creature target, int panelHeight) {
         int velX = target.getVelocityX();
         int velY = target.getVelocityY();
 
         double distance = Math.sqrt(Math.pow(target.getX() - getX(), 2) + Math.pow(target.getY() - getY(), 2));
-        
+
         if (distance == 0) return;
 
-        double lookAheadTicks = distance / getSpeed();
+        double lookAheadTicks = Math.min(distance / getSpeed(), 10);
 
         int predictedX = target.getX() + (int) (velX * lookAheadTicks);
         int predictedY = target.getY() + (int) (velY * lookAheadTicks);
@@ -207,7 +214,7 @@ public abstract class Creature extends Entity {
 
         updateFacing(moveX);
         setX(getX() + moveX);
-        setY(getY() + moveY);
+        setY(clampToGround(getY()+moveY, panelHeight));
     }
 
     public void resetState(int startHunger, int startX, int startY) {
