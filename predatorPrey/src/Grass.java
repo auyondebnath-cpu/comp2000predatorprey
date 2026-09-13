@@ -17,8 +17,6 @@ public class Grass extends Entity {
         return isEaten;
     }
 
-    // Eaten grass is removed immediately by Simulation (see tick()), so this
-    // just flags it as no longer edible for the instant before removal.
     public void setEaten(boolean isEaten) {
         this.isEaten = isEaten;
         if (isEaten) {
@@ -30,8 +28,6 @@ public class Grass extends Entity {
         return markedForRemoval;
     }
 
-    // Called once per in-game day. Grass has a natural lifespan of
-    // LIFESPAN_DAYS regardless of whether it's ever eaten.
     public void onDayTick() {
         ageInDays++;
         if (ageInDays >= LIFESPAN_DAYS) {
