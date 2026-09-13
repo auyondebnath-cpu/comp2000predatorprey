@@ -13,10 +13,6 @@ public class Prey extends Creature {
     public boolean isInDanger(){
         return inDanger;
     }
-   
-    public void movement() {
-
-    }
 
     public void setInDanger(boolean inDanger){
         this.inDanger = inDanger;
@@ -57,11 +53,22 @@ public class Prey extends Creature {
 
     @Override
     public void update(int panelWidth, int panelHeight){
-        if (target != null) {
+        if (fleeTicksRemaining > 0 && fleeTarget != null) {
+            flee(fleeTarget, panelHeight);
+            fleeTicksRemaining--;
+        } else if (target != null) {
             moveTowards(target, panelHeight);
         } else{
             moveWithBounce(panelWidth, panelHeight);
         }
         recordPosition();
+    }
+
+    @Override 
+    public void resetState(int startHunger, int startX, int startY){
+        super.resetState(startHunger, startX, startY);
+        this.fleeTicksRemaining = 0;
+        this.fleeTarget = null;
+        this.inDanger = false;
     }
 }
