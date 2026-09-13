@@ -163,6 +163,9 @@ public class Simulation {
 
     private void advanceDay() {
         List<Entity> newborns = new ArrayList<>();
+        int groundTop = panel.getHeight() / 5;
+        int panelW = panel.getWidth();
+        int panelH = panel.getHeight();
 
         for (Entity e : entities) {
             if (e instanceof Predator p) {
@@ -170,14 +173,18 @@ public class Simulation {
                 if (p.shouldReproduce(4)) {
                     int offsetX = random.nextInt(21) - 10;
                     int offsetY = random.nextInt(21) - 10;
-                    newborns.add(new Predator(p.getSpeed(), 100, p.getX() + offsetX, p.getY() + offsetY));
+                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - 65);
+                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - 65);
+                    newborns.add(new Predator(p.getSpeed(), 100, spawnX, spawnY));
                 }
             } else if (e instanceof Prey p) {
                 p.onDayTick();
-                if (p.shouldReproduce(3)) {
+                if (p.shouldReproduce(2)) {
                     int offsetX = random.nextInt(21) - 10;
                     int offsetY = random.nextInt(21) - 10;
-                    newborns.add(new Prey(p.getSpeed(), 100, false, p.getX() + offsetX, p.getY() + offsetY));
+                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - 65);
+                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - 65);
+                    newborns.add(new Prey(p.getSpeed(), 100, false, spawnX, spawnY));
                 }
             } else if (e instanceof Grass g) {
                 g.onDayTick();
@@ -188,12 +195,11 @@ public class Simulation {
         entities.removeIf(e -> e instanceof Prey p && p.isStarved(-4));
         entities.removeIf(e -> e instanceof Grass g && g.isMarkedForRemoval());
 
-        int groundTop = panel.getHeight() / 5;
-        int groundHeight = panel.getHeight() - groundTop;
+        int groundHeight = panelH - groundTop - Grass.GRASS_SIZE;
         int newGrassCount = 5 + random.nextInt(6);
         for (int i = 0; i < newGrassCount; i++) {
-            int x = random.nextInt(panel.getWidth());
-            int y = groundTop + random.nextInt(groundHeight);
+            int x = random.nextInt(panelW - Grass.GRASS_SIZE);
+            int y = groundTop + random.nextInt(Math.max(1, groundHeight));
             newborns.add(new Grass(x, y, 0));
         }
         entities.addAll(newborns);

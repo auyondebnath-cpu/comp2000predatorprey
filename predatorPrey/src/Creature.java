@@ -153,7 +153,7 @@ public abstract class Creature extends Entity {
 
     protected int clampToGround(int y, int panelHeight){
         int groundTop = panelHeight/5;
-        return Math.max(groundTop, y);
+        return Math.max(groundTop, Math.min(y, panelHeight - 65));
     }
 
     protected int clampToWidth(int x, int panelWidth) {

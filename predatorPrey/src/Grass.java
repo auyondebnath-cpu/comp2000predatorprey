@@ -3,6 +3,7 @@ public class Grass extends Entity {
     private int ageInDays = 0;
     public static final int LIFESPAN_DAYS = 2;
     private boolean markedForRemoval = false;
+    public static final int GRASS_SIZE = 30;
 
     public Grass(int x, int y, int growthTimer) {
         super(x, y, true);

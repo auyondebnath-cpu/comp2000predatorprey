@@ -13,11 +13,10 @@ public class SimulationPanel extends JPanel{
     private List<Entity> entities = new ArrayList<>();
 
     private static final int ICON_SIZE = 65;
-    private static final int GRASS_SIZE = 30;
 
     private final Image predatorIcon = loadAnimatedIcon("predatorPrey/resources/tiger.gif");
     private final Image preyIcon = loadAnimatedIcon("predatorPrey/resources/deer.gif");
-    private final Image grassIcon = loadStaticIcon("predatorPrey/resources/grass.png", GRASS_SIZE);
+    private final Image grassIcon = loadStaticIcon("predatorPrey/resources/grass.png", Grass.GRASS_SIZE);
     private final Image backgroundImage = loadBackground("predatorPrey/resources/background.jpg");
 
     private Image loadAnimatedIcon (String path){
@@ -91,7 +90,7 @@ public class SimulationPanel extends JPanel{
                 facingRight = p.isFacingRight();
             } else if (entity instanceof Grass){
                 icon = grassIcon;
-                size = GRASS_SIZE;
+                size = Grass.GRASS_SIZE;
                 fallbackColor = Color.GREEN;
             } else{
                 icon = null;
