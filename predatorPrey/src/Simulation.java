@@ -173,9 +173,13 @@ public class Simulation {
         entities.removeIf(e -> e instanceof Prey p && p.isStarved(-4));
         entities.removeIf(e -> e instanceof Grass g && g.isMarkedForRemoval());
 
+        int groundTop = panel.getHeight() / 5;
+        int groundHeight = panel.getHeight() - groundTop;
         int newGrassCount = 5 + random.nextInt(6);
         for (int i = 0; i < newGrassCount; i++) {
-            newborns.add(new Grass(random.nextInt(panel.getWidth()), random.nextInt(panel.getHeight()), 0));
+            int x = random.nextInt(panel.getWidth());
+            int y = groundTop + random.nextInt(groundHeight);
+            newborns.add(new Grass(x, y, 0));
         }
         entities.addAll(newborns);
     }
