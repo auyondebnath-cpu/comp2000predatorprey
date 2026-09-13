@@ -57,6 +57,16 @@ public class Simulation {
             Entity nearestGrass = findNearest(prey, grassList, 100);
             prey.setTarget(nearestGrass);
         }
+        
+        for(Prey prey: preyList){
+            Predator nearestThreat = (Predator) findNearest(prey, predators, 120);
+            if(nearestThreat != null){
+                prey.setInDanger(true);
+                prey.setFleeTarget(nearestThreat);
+            } else{
+                prey.setInDanger(false);
+            }
+        }
 
         int width = panel.getWidth();
         int height = panel.getHeight();
