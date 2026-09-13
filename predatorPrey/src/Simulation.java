@@ -74,6 +74,7 @@ public class Simulation {
             entity.update(width, height);
         }
 
+        int groundTop = height/5;
         // Anti-merging logic (Separation) for Prey
         for (int i = 0; i < preyList.size(); i++) {
             for (int j = i + 1; j < preyList.size(); j++) {
@@ -89,11 +90,11 @@ public class Simulation {
                         dy = random.nextBoolean() ? 1 : -1;
                     }
 
-                    p1.setX(p1.getX() + (int) Math.signum(dx) * 2);
-                    p1.setY(p1.getY() + (int) Math.signum(dy) * 2);
+                    p1.setX(clamp(p1.getX() + (int) Math.signum(dx) * 2, 0, width - 65));
+                    p1.setY(clamp(p1.getY() + (int) Math.signum(dy) * 2, groundTop, height - 65));
 
-                    p2.setX(p2.getX() - (int) Math.signum(dx) * 2);
-                    p2.setY(p2.getY() - (int) Math.signum(dy) * 2);
+                    p2.setX(clamp(p2.getX() - (int) Math.signum(dx) * 2, 0, width - 65));
+                    p2.setY(clamp(p2.getY() - (int) Math.signum(dy) * 2, groundTop, height - 65));
                 }
             }
         }
@@ -113,11 +114,11 @@ public class Simulation {
                         dy = random.nextBoolean() ? 1 : -1;
                     }
 
-                    p1.setX(p1.getX() + (int) Math.signum(dx) * 2);
-                    p1.setY(p1.getY() + (int) Math.signum(dy) * 2);
+                    p1.setX(clamp(p1.getX() + (int) Math.signum(dx) * 2, 0, width - 65));
+                    p1.setY(clamp(p1.getY() + (int) Math.signum(dy) * 2, groundTop, height - 65));
 
-                    p2.setX(p2.getX() - (int) Math.signum(dx) * 2);
-                    p2.setY(p2.getY() - (int) Math.signum(dy) * 2);
+                    p2.setX(clamp(p2.getX() - (int) Math.signum(dx) * 2, 0, width - 65));
+                    p2.setY(clamp(p2.getY() - (int) Math.signum(dy) * 2, groundTop, height - 65));
                 }
             }
         }
@@ -154,6 +155,10 @@ public class Simulation {
             tickCounter = 0;
             advanceDay();
         }
+    }
+
+    private int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(value, max));
     }
 
     private void advanceDay() {
