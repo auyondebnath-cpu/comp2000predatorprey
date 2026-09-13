@@ -18,6 +18,7 @@ public class SimulationPanel extends JPanel{
     private final Image predatorIcon = loadAnimatedIcon("predatorPrey/resources/tiger.gif");
     private final Image preyIcon = loadAnimatedIcon("predatorPrey/resources/deer.gif");
     private final Image grassIcon = loadStaticIcon("predatorPrey/resources/grass.png", GRASS_SIZE);
+    private final Image backgroundImage = loadStaticIcon("predatorPrey/resources/background.png", 0);
 
     private Image loadAnimatedIcon (String path){
         Image result = null;
@@ -49,6 +50,16 @@ public class SimulationPanel extends JPanel{
 
     public void setEntities(List<Entity> entities){
         this.entities = entities;
+    }
+
+    private Image loadBackground(String path){
+        Image result = null;
+        try{
+            result = ImageIO.read(new File(path));
+        } catch(IOException e) {
+            System.err.println("Failed to load background '" + path + "': " + e.getMessage());
+        }
+        return result;
     }
 
     @Override
