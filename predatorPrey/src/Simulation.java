@@ -12,6 +12,14 @@ public class Simulation {
     private int tickCounter = 0;
     private Random random = new Random();
 
+    private static final int PREDATOR_HUNT_RANGE = 200;
+    private static final int PREY_FORAGE_RANGE = 100;
+    private static final int PREY_THREAT_RANGE = 120;
+    private static final int EAT_RANGE = 35;
+    private static final int PREY_SEPARATION_DIST = 15;
+    private static final int PREDATOR_SEPARATION_DIST = 20;
+    public static final int SPRITE_MARGIN = 65;
+
     public Simulation(SimulationPanel panel) {
         this.entities = new ArrayList<>();
         this.panel = panel;
@@ -46,7 +54,7 @@ public class Simulation {
         List<Prey> availablePrey = new ArrayList<>(preyList);
 
         for (Predator predator : predators) {
-            Entity nearestPrey = findNearest(predator, availablePrey, 200);
+            Entity nearestPrey = findNearest(predator, availablePrey, PREDATOR_HUNT_RANGE);
             predator.setTarget(nearestPrey);
             if (nearestPrey != null) {
                 availablePrey.remove(nearestPrey);
@@ -54,12 +62,12 @@ public class Simulation {
         }
 
         for (Prey prey : preyList) {
-            Entity nearestGrass = findNearest(prey, grassList, 100);
+            Entity nearestGrass = findNearest(prey, grassList, PREY_FORAGE_RANGE);
             prey.setTarget(nearestGrass);
         }
         
         for(Prey prey: preyList){
-            Predator nearestThreat = (Predator) findNearest(prey, predators, 120);
+            Predator nearestThreat = (Predator) findNearest(prey, predators, PREY_THREAT_RANGE);
             if(nearestThreat != null){
                 prey.setInDanger(true);
                 prey.setFleeTarget(nearestThreat);
@@ -76,14 +84,14 @@ public class Simulation {
 
         int groundTop = height/5;
         // Anti-merging logic (Separation) for Prey
-        applySeparation(preyList, 15, width, height);
-        applySeparation(predators, 20, width, height);
+        applySeparation(preyList, PREY_SEPARATION_DIST, width, height);
+        applySeparation(predators, PREDATOR_SEPARATION_DIST, width, height);
 
         Set<Prey> consumedPrey = new HashSet<>();
 
         for (Predator predator : predators) {
             for (Prey prey : preyList) {
-                if (!consumedPrey.contains(prey) && predator.isNear(prey, 35)) {
+                if (!consumedPrey.contains(prey) && predator.isNear(prey, EAT_RANGE)) {
                     predator.setHunger(predator.getHunger() + 50);
                     predator.setFedToday(true);
                     prey.setHunger(0);
@@ -94,7 +102,7 @@ public class Simulation {
 
         for (Prey prey : preyList) {
             for (Grass grass : grassList) {
-                if (prey.isNear(grass, 35) && grass.isEdible()) {
+                if (prey.isNear(grass, EAT_RANGE) && grass.isEdible()) {
                     prey.setHunger(prey.getHunger() + 30);
                     prey.setFedToday(true);
                     grass.setEaten(true);
