@@ -165,8 +165,8 @@ public class Simulation {
                 if (p.shouldReproduce(4)) {
                     int offsetX = random.nextInt(21) - 10;
                     int offsetY = random.nextInt(21) - 10;
-                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - 65);
-                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - 65);
+                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - SPRITE_MARGIN);
+                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - SPRITE_MARGIN);
                     newborns.add(new Predator(p.getSpeed(), 100, spawnX, spawnY));
                 }
             } else if (e instanceof Prey p) {
@@ -174,8 +174,8 @@ public class Simulation {
                 if (p.shouldReproduce(2)) {
                     int offsetX = random.nextInt(21) - 10;
                     int offsetY = random.nextInt(21) - 10;
-                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - 65);
-                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - 65);
+                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - SPRITE_MARGIN);
+                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - SPRITE_MARGIN);
                     newborns.add(new Prey(p.getSpeed(), 100, false, spawnX, spawnY));
                 }
             } else if (e instanceof Grass g) {
