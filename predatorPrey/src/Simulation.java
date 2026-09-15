@@ -12,6 +12,14 @@ public class Simulation {
     private int tickCounter = 0;
     private Random random = new Random();
 
+    private static final int PREDATOR_HUNT_RANGE = 200;
+    private static final int PREY_FORAGE_RANGE = 100;
+    private static final int PREY_THREAT_RANGE = 120;
+    private static final int EAT_RANGE = 35;
+    private static final int PREY_SEPARATION_DIST = 15;
+    private static final int PREDATOR_SEPARATION_DIST = 20;
+    public static final int SPRITE_MARGIN = 65;
+
     public Simulation(SimulationPanel panel) {
         this.entities = new ArrayList<>();
         this.panel = panel;
@@ -46,7 +54,7 @@ public class Simulation {
         List<Prey> availablePrey = new ArrayList<>(preyList);
 
         for (Predator predator : predators) {
-            Entity nearestPrey = findNearest(predator, availablePrey, 200);
+            Entity nearestPrey = findNearest(predator, availablePrey, PREDATOR_HUNT_RANGE);
             predator.setTarget(nearestPrey);
             if (nearestPrey != null) {
                 availablePrey.remove(nearestPrey);
@@ -54,12 +62,12 @@ public class Simulation {
         }
 
         for (Prey prey : preyList) {
-            Entity nearestGrass = findNearest(prey, grassList, 100);
+            Entity nearestGrass = findNearest(prey, grassList, PREY_FORAGE_RANGE);
             prey.setTarget(nearestGrass);
         }
         
         for(Prey prey: preyList){
-            Predator nearestThreat = (Predator) findNearest(prey, predators, 120);
+            Predator nearestThreat = (Predator) findNearest(prey, predators, PREY_THREAT_RANGE);
             if(nearestThreat != null){
                 prey.setInDanger(true);
                 prey.setFleeTarget(nearestThreat);
@@ -76,58 +84,14 @@ public class Simulation {
 
         int groundTop = height/5;
         // Anti-merging logic (Separation) for Prey
-        for (int i = 0; i < preyList.size(); i++) {
-            for (int j = i + 1; j < preyList.size(); j++) {
-                Prey p1 = preyList.get(i);
-                Prey p2 = preyList.get(j);
-
-                if (p1.isNear(p2, 15)) {
-                    int dx = p1.getX() - p2.getX();
-                    int dy = p1.getY() - p2.getY();
-
-                    if (dx == 0 && dy == 0) {
-                        dx = random.nextBoolean() ? 1 : -1;
-                        dy = random.nextBoolean() ? 1 : -1;
-                    }
-
-                    p1.setX(clamp(p1.getX() + (int) Math.signum(dx) * 2, 0, width - 65));
-                    p1.setY(clamp(p1.getY() + (int) Math.signum(dy) * 2, groundTop, height - 65));
-
-                    p2.setX(clamp(p2.getX() - (int) Math.signum(dx) * 2, 0, width - 65));
-                    p2.setY(clamp(p2.getY() - (int) Math.signum(dy) * 2, groundTop, height - 65));
-                }
-            }
-        }
-
-        // Anti-merging logic (Separation) for Predators
-        for (int i = 0; i < predators.size(); i++) {
-            for (int j = i + 1; j < predators.size(); j++) {
-                Predator p1 = predators.get(i);
-                Predator p2 = predators.get(j);
-
-                if (p1.isNear(p2, 20)) {
-                    int dx = p1.getX() - p2.getX();
-                    int dy = p1.getY() - p2.getY();
-
-                    if (dx == 0 && dy == 0) {
-                        dx = random.nextBoolean() ? 1 : -1;
-                        dy = random.nextBoolean() ? 1 : -1;
-                    }
-
-                    p1.setX(clamp(p1.getX() + (int) Math.signum(dx) * 2, 0, width - 65));
-                    p1.setY(clamp(p1.getY() + (int) Math.signum(dy) * 2, groundTop, height - 65));
-
-                    p2.setX(clamp(p2.getX() - (int) Math.signum(dx) * 2, 0, width - 65));
-                    p2.setY(clamp(p2.getY() - (int) Math.signum(dy) * 2, groundTop, height - 65));
-                }
-            }
-        }
+        applySeparation(preyList, PREY_SEPARATION_DIST, width, height);
+        applySeparation(predators, PREDATOR_SEPARATION_DIST, width, height);
 
         Set<Prey> consumedPrey = new HashSet<>();
 
         for (Predator predator : predators) {
             for (Prey prey : preyList) {
-                if (!consumedPrey.contains(prey) && predator.isNear(prey, 35)) {
+                if (!consumedPrey.contains(prey) && predator.isNear(prey, EAT_RANGE)) {
                     predator.setHunger(predator.getHunger() + 50);
                     predator.setFedToday(true);
                     prey.setHunger(0);
@@ -138,7 +102,7 @@ public class Simulation {
 
         for (Prey prey : preyList) {
             for (Grass grass : grassList) {
-                if (prey.isNear(grass, 35) && grass.isEdible()) {
+                if (prey.isNear(grass, EAT_RANGE) && grass.isEdible()) {
                     prey.setHunger(prey.getHunger() + 30);
                     prey.setFedToday(true);
                     grass.setEaten(true);
@@ -157,6 +121,34 @@ public class Simulation {
         }
     }
 
+    private void applySeparation(List<? extends Creature> creatures, int minDistance, int panelWidth, int panelHeight) {
+        int groundTop = panelHeight / 5;
+        
+        for (int i = 0; i < creatures.size(); i++) {
+            for (int j = i + 1; j < creatures.size(); j++) {
+                Creature c1 = creatures.get(i);
+                Creature c2 = creatures.get(j);
+
+                if (c1.isNear(c2, minDistance)) {
+                    int dx = c1.getX() - c2.getX();
+                    int dy = c1.getY() - c2.getY();
+
+                    // If identical coordinates, pick a random separation direction
+                    if (dx == 0 && dy == 0) {
+                        dx = random.nextBoolean() ? 1 : -1;
+                        dy = random.nextBoolean() ? 1 : -1;
+                    }
+
+                    c1.setX(clamp(c1.getX() + (int) Math.signum(dx) * 2, 0, panelWidth - SPRITE_MARGIN));
+                    c1.setY(clamp(c1.getY() + (int) Math.signum(dy) * 2, groundTop, panelHeight - SPRITE_MARGIN));
+
+                    c2.setX(clamp(c2.getX() - (int) Math.signum(dx) * 2, 0, panelWidth - SPRITE_MARGIN));
+                    c2.setY(clamp(c2.getY() - (int) Math.signum(dy) * 2, groundTop, panelHeight - SPRITE_MARGIN));
+                }
+            }
+        }
+    }
+
     private int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(value, max));
     }
@@ -167,33 +159,15 @@ public class Simulation {
         int panelW = panel.getWidth();
         int panelH = panel.getHeight();
 
-        for (Entity e : entities) {
-            if (e instanceof Predator p) {
-                p.onDayTick();
-                if (p.shouldReproduce(4)) {
-                    int offsetX = random.nextInt(21) - 10;
-                    int offsetY = random.nextInt(21) - 10;
-                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - 65);
-                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - 65);
-                    newborns.add(new Predator(p.getSpeed(), 100, spawnX, spawnY));
-                }
-            } else if (e instanceof Prey p) {
-                p.onDayTick();
-                if (p.shouldReproduce(2)) {
-                    int offsetX = random.nextInt(21) - 10;
-                    int offsetY = random.nextInt(21) - 10;
-                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - 65);
-                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - 65);
-                    newborns.add(new Prey(p.getSpeed(), 100, false, spawnX, spawnY));
-                }
-            } else if (e instanceof Grass g) {
-                g.onDayTick();
-            }
+    for (Entity e : entities) {
+        e.onDayTick();
+        Entity offspring = e.reproduce(panelW, panelH, groundTop, random);
+        if (offspring != null) {
+            newborns.add(offspring);
         }
+    }
 
-        entities.removeIf(e -> e instanceof Predator p && p.isStarved(-5));
-        entities.removeIf(e -> e instanceof Prey p && p.isStarved(-4));
-        entities.removeIf(e -> e instanceof Grass g && g.isMarkedForRemoval());
+    entities.removeIf(Entity::shouldBeRemoved);
 
         int groundHeight = panelH - groundTop - Grass.GRASS_SIZE;
         int newGrassCount = 5 + random.nextInt(6);
@@ -222,14 +196,17 @@ public class Simulation {
 
     private Entity findNearest(Entity from, List<? extends Entity> candidates, int range) {
         Entity nearest = null;
-        double nearestDist = Double.MAX_VALUE;
+        long maxDistSq = (long) range * range;
+        long nearestDistSq = Long.MAX_VALUE;
+
         for (Entity candidate : candidates) {
-            double dx = from.getX() - candidate.getX();
-            double dy = from.getY() - candidate.getY();
-            double dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= range && dist < nearestDist) {
+            long dx = from.getX() - candidate.getX();
+            long dy = from.getY() - candidate.getY();
+            long distSq = dx * dx + dy * dy;
+
+            if (distSq <= maxDistSq && distSq < nearestDistSq) {
                 nearest = candidate;
-                nearestDist = dist;
+                nearestDistSq = distSq;
             }
         }
         return nearest;
