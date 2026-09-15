@@ -139,11 +139,11 @@ public class Simulation {
                         dy = random.nextBoolean() ? 1 : -1;
                     }
 
-                    c1.setX(clamp(c1.getX() + (int) Math.signum(dx) * 2, 0, panelWidth - 65));
-                    c1.setY(clamp(c1.getY() + (int) Math.signum(dy) * 2, groundTop, panelHeight - 65));
+                    c1.setX(clamp(c1.getX() + (int) Math.signum(dx) * 2, 0, panelWidth - SPRITE_MARGIN));
+                    c1.setY(clamp(c1.getY() + (int) Math.signum(dy) * 2, groundTop, panelHeight - SPRITE_MARGIN));
 
-                    c2.setX(clamp(c2.getX() - (int) Math.signum(dx) * 2, 0, panelWidth - 65));
-                    c2.setY(clamp(c2.getY() - (int) Math.signum(dy) * 2, groundTop, panelHeight - 65));
+                    c2.setX(clamp(c2.getX() - (int) Math.signum(dx) * 2, 0, panelWidth - SPRITE_MARGIN));
+                    c2.setY(clamp(c2.getY() - (int) Math.signum(dy) * 2, groundTop, panelHeight - SPRITE_MARGIN));
                 }
             }
         }
