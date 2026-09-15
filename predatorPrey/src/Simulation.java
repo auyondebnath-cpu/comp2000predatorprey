@@ -159,33 +159,15 @@ public class Simulation {
         int panelW = panel.getWidth();
         int panelH = panel.getHeight();
 
-        for (Entity e : entities) {
-            if (e instanceof Predator p) {
-                p.onDayTick();
-                if (p.shouldReproduce(4)) {
-                    int offsetX = random.nextInt(21) - 10;
-                    int offsetY = random.nextInt(21) - 10;
-                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - SPRITE_MARGIN);
-                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - SPRITE_MARGIN);
-                    newborns.add(new Predator(p.getSpeed(), 100, spawnX, spawnY));
-                }
-            } else if (e instanceof Prey p) {
-                p.onDayTick();
-                if (p.shouldReproduce(2)) {
-                    int offsetX = random.nextInt(21) - 10;
-                    int offsetY = random.nextInt(21) - 10;
-                    int spawnX = clamp(p.getX() + offsetX, 0, panelW - SPRITE_MARGIN);
-                    int spawnY = clamp(p.getY() + offsetY, groundTop, panelH - SPRITE_MARGIN);
-                    newborns.add(new Prey(p.getSpeed(), 100, false, spawnX, spawnY));
-                }
-            } else if (e instanceof Grass g) {
-                g.onDayTick();
-            }
+    for (Entity e : entities) {
+        e.onDayTick();
+        Entity offspring = e.reproduce(panelW, panelH, groundTop, random);
+        if (offspring != null) {
+            newborns.add(offspring);
         }
+    }
 
-        entities.removeIf(e -> e instanceof Predator p && p.isStarved(-5));
-        entities.removeIf(e -> e instanceof Prey p && p.isStarved(-4));
-        entities.removeIf(e -> e instanceof Grass g && g.isMarkedForRemoval());
+    entities.removeIf(Entity::shouldBeRemoved);
 
         int groundHeight = panelH - groundTop - Grass.GRASS_SIZE;
         int newGrassCount = 5 + random.nextInt(6);

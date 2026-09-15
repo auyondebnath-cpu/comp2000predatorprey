@@ -75,6 +75,23 @@ public class Prey extends Creature {
         recordPosition();
     }
 
+    @Override
+    public boolean shouldBeRemoved() {
+        return isStarved(-4);
+    }
+
+    @Override
+    public Entity reproduce(int panelWidth, int panelHeight, int groundTop, java.util.Random random) {
+        if (shouldReproduce(2)) {
+            int offsetX = random.nextInt(21) - 10;
+            int offsetY = random.nextInt(21) - 10;
+            int spawnX = Math.max(0, Math.min(getX() + offsetX, panelWidth - Simulation.SPRITE_MARGIN));
+            int spawnY = Math.max(groundTop, Math.min(getY() + offsetY, panelHeight - Simulation.SPRITE_MARGIN));
+            return new Prey(getSpeed(), 100, false, spawnX, spawnY);
+        }
+        return null;
+    }
+
     @Override 
     public void resetState(int startHunger, int startX, int startY){
         super.resetState(startHunger, startX, startY);

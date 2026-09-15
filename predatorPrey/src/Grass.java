@@ -41,4 +41,9 @@ public class Grass extends Entity {
         // No per-tick behaviour: eating triggers immediate removal, and
         // natural expiry is handled once per day via onDayTick().
     }
+
+    @Override
+    public boolean shouldBeRemoved() {
+        return markedForRemoval;
+    }
 }

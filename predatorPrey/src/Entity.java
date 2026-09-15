@@ -58,4 +58,14 @@ public abstract class Entity {
       int dy = this.getY() - other.getY();
       return (dx * dx + dy * dy) <= (range * range);
    }
+
+   public void onDayTick() {}
+
+   public boolean shouldBeRemoved() {
+      return false;
+   }
+
+   public Entity reproduce(int panelWidth, int panelHeight, int groundTop, java.util.Random random) {
+      return null;
+   }
 }
