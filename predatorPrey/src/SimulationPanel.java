@@ -19,19 +19,17 @@ public class SimulationPanel extends JPanel{
     private final Image grassIcon = loadStaticIcon("predatorPrey/resources/grass.png", Grass.GRASS_SIZE);
     private final Image backgroundImage = loadBackground("predatorPrey/resources/background.jpg");
 
-    private Image loadAnimatedIcon (String path){
-        Image result = null;
+    private Image loadAnimatedIcon(String path) {
         try {
-            File file = new File(path);
-            ImageIO.read(file);
             ImageIcon icon = new ImageIcon(path);
-            result = icon.getImage();
-        } catch (IOException e) {
-            System.err.println("Failed to load animated icon ' " + path + "': " + e.getMessage());
+            System.out.println("Finished icon load attempt for: " + path);
+            return icon.getImage();
+        } catch (Exception e) {
+            System.err.println("Failed to load animated icon '" + path + "': " + e.getMessage());
+            return null;
         } finally{
             System.out.println("Finished icon load attempt for: " + path);
         }
-        return result;
     }
 
     private Image loadStaticIcon(String path, int size){
