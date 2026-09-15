@@ -14,7 +14,7 @@ public class Simulation {
 
     private static final int PREDATOR_HUNT_RANGE = 200;
     private static final int PREY_FORAGE_RANGE = 100;
-    private static final int PREY_THREAT_RANGE = 120;
+    private static final int PREY_THREAT_RANGE = 200;
     private static final int EAT_RANGE = 35;
     private static final int PREY_SEPARATION_DIST = 15;
     private static final int PREDATOR_SEPARATION_DIST = 20;
@@ -179,7 +179,7 @@ public class Simulation {
         for (int i = 0; i < newGrassCount; i++) {
             int x = random.nextInt(panelW - Grass.GRASS_SIZE);
             int y = groundTop + random.nextInt(Math.max(1, groundHeight));
-            newborns.add(new Grass(x, y, 0));
+            newborns.add(new Grass(x, y));
         }
         entities.addAll(newborns);
     }

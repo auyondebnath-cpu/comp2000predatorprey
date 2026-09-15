@@ -5,7 +5,7 @@ public class Grass extends Entity {
     private boolean markedForRemoval = false;
     public static final int GRASS_SIZE = 30;
 
-    public Grass(int x, int y, int growthTimer) {
+    public Grass(int x, int y) {
         super(x, y, true);
         this.isEaten = false;
     }

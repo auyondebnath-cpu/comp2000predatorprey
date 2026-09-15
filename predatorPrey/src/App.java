@@ -25,9 +25,9 @@ public class App {
                 int y = 150 + rand.nextInt(350);
                 sim.addEntity(new Prey(4, 100, false, x, y));
             }
-            sim.addEntity(new Grass(100, 100, 100));
-            sim.addEntity(new Grass(300, 400, 100));
-            sim.addEntity(new Grass(500, 150, 100));
+            sim.addEntity(new Grass(100, 100));
+            sim.addEntity(new Grass(300, 400));
+            sim.addEntity(new Grass(500, 150));
         } catch (InvalidCreatureStateException e) {
             System.err.println("Failed to create initial entities: " + e.getMessage());
             JOptionPane.showMessageDialog(frame, "Simulation could not start: " + e.getMessage(),
