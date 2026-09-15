@@ -76,52 +76,8 @@ public class Simulation {
 
         int groundTop = height/5;
         // Anti-merging logic (Separation) for Prey
-        for (int i = 0; i < preyList.size(); i++) {
-            for (int j = i + 1; j < preyList.size(); j++) {
-                Prey p1 = preyList.get(i);
-                Prey p2 = preyList.get(j);
-
-                if (p1.isNear(p2, 15)) {
-                    int dx = p1.getX() - p2.getX();
-                    int dy = p1.getY() - p2.getY();
-
-                    if (dx == 0 && dy == 0) {
-                        dx = random.nextBoolean() ? 1 : -1;
-                        dy = random.nextBoolean() ? 1 : -1;
-                    }
-
-                    p1.setX(clamp(p1.getX() + (int) Math.signum(dx) * 2, 0, width - 65));
-                    p1.setY(clamp(p1.getY() + (int) Math.signum(dy) * 2, groundTop, height - 65));
-
-                    p2.setX(clamp(p2.getX() - (int) Math.signum(dx) * 2, 0, width - 65));
-                    p2.setY(clamp(p2.getY() - (int) Math.signum(dy) * 2, groundTop, height - 65));
-                }
-            }
-        }
-
-        // Anti-merging logic (Separation) for Predators
-        for (int i = 0; i < predators.size(); i++) {
-            for (int j = i + 1; j < predators.size(); j++) {
-                Predator p1 = predators.get(i);
-                Predator p2 = predators.get(j);
-
-                if (p1.isNear(p2, 20)) {
-                    int dx = p1.getX() - p2.getX();
-                    int dy = p1.getY() - p2.getY();
-
-                    if (dx == 0 && dy == 0) {
-                        dx = random.nextBoolean() ? 1 : -1;
-                        dy = random.nextBoolean() ? 1 : -1;
-                    }
-
-                    p1.setX(clamp(p1.getX() + (int) Math.signum(dx) * 2, 0, width - 65));
-                    p1.setY(clamp(p1.getY() + (int) Math.signum(dy) * 2, groundTop, height - 65));
-
-                    p2.setX(clamp(p2.getX() - (int) Math.signum(dx) * 2, 0, width - 65));
-                    p2.setY(clamp(p2.getY() - (int) Math.signum(dy) * 2, groundTop, height - 65));
-                }
-            }
-        }
+        applySeparation(preyList, 15, width, height);
+        applySeparation(predators, 20, width, height);
 
         Set<Prey> consumedPrey = new HashSet<>();
 
@@ -154,6 +110,34 @@ public class Simulation {
         if (tickCounter >= TICKS_PER_DAY) {
             tickCounter = 0;
             advanceDay();
+        }
+    }
+
+    private void applySeparation(List<? extends Creature> creatures, int minDistance, int panelWidth, int panelHeight) {
+        int groundTop = panelHeight / 5;
+        
+        for (int i = 0; i < creatures.size(); i++) {
+            for (int j = i + 1; j < creatures.size(); j++) {
+                Creature c1 = creatures.get(i);
+                Creature c2 = creatures.get(j);
+
+                if (c1.isNear(c2, minDistance)) {
+                    int dx = c1.getX() - c2.getX();
+                    int dy = c1.getY() - c2.getY();
+
+                    // If identical coordinates, pick a random separation direction
+                    if (dx == 0 && dy == 0) {
+                        dx = random.nextBoolean() ? 1 : -1;
+                        dy = random.nextBoolean() ? 1 : -1;
+                    }
+
+                    c1.setX(clamp(c1.getX() + (int) Math.signum(dx) * 2, 0, panelWidth - 65));
+                    c1.setY(clamp(c1.getY() + (int) Math.signum(dy) * 2, groundTop, panelHeight - 65));
+
+                    c2.setX(clamp(c2.getX() - (int) Math.signum(dx) * 2, 0, panelWidth - 65));
+                    c2.setY(clamp(c2.getY() - (int) Math.signum(dy) * 2, groundTop, panelHeight - 65));
+                }
+            }
         }
     }
 
