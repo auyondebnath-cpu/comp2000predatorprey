@@ -90,12 +90,17 @@ public class Simulation {
         Set<Prey> consumedPrey = new HashSet<>();
 
         for (Predator predator : predators) {
+            if (predator.isFedToday()) {
+                continue;
+            }
             for (Prey prey : preyList) {
                 if (!consumedPrey.contains(prey) && predator.isNear(prey, EAT_RANGE)) {
                     predator.setHunger(predator.getHunger() + 50);
                     predator.setFedToday(true);
+                    predator.startRetreat(prey.getX(), prey.getY());
                     prey.setHunger(0);
                     consumedPrey.add(prey);
+                    break;
                 }
             }
         }

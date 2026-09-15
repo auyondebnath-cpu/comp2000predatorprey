@@ -18,6 +18,13 @@ public class SimulationPanel extends JPanel{
     private final Image preyIcon = loadAnimatedIcon("predatorPrey/resources/deer.gif");
     private final Image grassIcon = loadStaticIcon("predatorPrey/resources/grass.png", Grass.GRASS_SIZE);
     private final Image backgroundImage = loadBackground("predatorPrey/resources/background.jpg");
+    private final Image gameOverImage = loadBackground("predatorPrey/resources/OVER.png");
+    
+    private boolean simulationOver = false;
+
+    public void setSimulationOver(boolean simulationOver) {
+        this.simulationOver = simulationOver;
+    }
 
     private Image loadAnimatedIcon(String path) {
         try {
@@ -96,6 +103,12 @@ public class SimulationPanel extends JPanel{
                 fallbackColor=Color.BLACK;
             }
 
+            if (simulationOver && gameOverImage != null) {
+                int x = (getWidth() - 300) / 2;
+                int y = (getHeight() - 300) / 2;
+                g2d.drawImage(gameOverImage, x, y, this);
+            }
+
             if(icon!=null){
                 drawFacingImage(g2d, icon, entity.getX(), entity.getY(), size, facingRight); 
             } else{
@@ -110,6 +123,10 @@ public class SimulationPanel extends JPanel{
             g2d.drawImage(icon, x, y, size, size, this);
         } else{
             g2d.drawImage(icon, x+size, y, -size, size, this);
+        }
+
+        if (simulationOver && gameOverImage != null) {
+            g2d.drawImage(gameOverImage, 0, 0, getWidth(), getHeight(), this);
         }
     }
 }

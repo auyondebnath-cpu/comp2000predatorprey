@@ -40,7 +40,17 @@ public class App {
         Timer timer = new Timer(33, e -> {
             sim.tick();
             simPanel.repaint();
+
+            long predatorCount = sim.getEntities().stream().filter(en -> en instanceof Predator).count();
+            long preyCount = sim.getEntities().stream().filter(en -> en instanceof Prey).count();
+
+            if (predatorCount == 0 && preyCount == 0) {
+                ((Timer) e.getSource()).stop();
+                simPanel.setSimulationOver(true);
+                simPanel.repaint();
+            }
         });
+
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener(e -> timer.start());
@@ -50,6 +60,7 @@ public class App {
         resetButton.addActionListener(e -> {
             timer.stop();
             sim.reset();
+            simPanel.setSimulationOver(false);
             simPanel.repaint();
         });
 

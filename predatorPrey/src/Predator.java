@@ -1,7 +1,28 @@
 public class Predator extends Creature {
-   
+    
+    private int retreatTicksRemaining = 0;
+    private int retreatDirX = 1;
+    private int retreatDirY = 1;
+    private static final int RETREAT_DURATION_TICKS = 75;
+
     public Predator(int speed, int hunger, int x, int y) {
         super(speed, hunger, false, x, y);
+    }
+
+    public void startRetreat(int fromX, int fromY) {
+        retreatDirX = (getX() - fromX) >= 0 ? 1 : -1;
+        retreatDirY = (getY() - fromY) >= 0 ? 1 : -1;
+        if (getX() == fromX) retreatDirX = 1;
+        if (getY() == fromY) retreatDirY = 1;
+        retreatTicksRemaining = RETREAT_DURATION_TICKS;
+    }
+
+    private void retreat(int panelWidth, int panelHeight) {
+        int moveX = retreatDirX * getSpeed();
+        int moveY = retreatDirY * getSpeed();
+        updateFacing(moveX);
+        setX(clampToWidth(getX() + moveX, panelWidth));
+        setY(clampToGround(getY() + moveY, panelHeight));
     }
 
     protected void pursue(Creature target, int panelWidth, int panelHeight) {
@@ -57,7 +78,10 @@ public class Predator extends Creature {
 
     @Override
     public void update(int panelWidth, int panelHeight){
-        if (target instanceof Prey c) {
+        if (retreatTicksRemaining > 0) {
+            retreat(panelWidth, panelHeight);
+            retreatTicksRemaining--;
+        } else if (target instanceof Prey c) {
             pursue(c, panelWidth, panelHeight);
         } else if (target != null) {
             moveTowards(target, panelWidth, panelHeight);
@@ -65,5 +89,11 @@ public class Predator extends Creature {
             moveWithBounce(panelWidth, panelHeight);
         }
         recordPosition();
+    }
+
+    @Override
+    public void resetState(int startHunger, int startX, int startY) {
+        super.resetState(startHunger, startX, startY);
+        this.retreatTicksRemaining = 0;
     }
 }

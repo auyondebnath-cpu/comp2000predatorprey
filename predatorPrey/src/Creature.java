@@ -107,6 +107,10 @@ public abstract class Creature extends Entity {
         lastY = getY();
     }
 
+    public boolean isFedToday(){
+        return fedToday;
+    }
+
 
     protected void moveWithBounce(int panelWidth, int panelHeight){
         int groundTop = panelHeight/5;
