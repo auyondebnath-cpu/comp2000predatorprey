@@ -206,14 +206,17 @@ public class Simulation {
 
     private Entity findNearest(Entity from, List<? extends Entity> candidates, int range) {
         Entity nearest = null;
-        double nearestDist = Double.MAX_VALUE;
+        long maxDistSq = (long) range * range;
+        long nearestDistSq = Long.MAX_VALUE;
+
         for (Entity candidate : candidates) {
-            double dx = from.getX() - candidate.getX();
-            double dy = from.getY() - candidate.getY();
-            double dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= range && dist < nearestDist) {
+            long dx = from.getX() - candidate.getX();
+            long dy = from.getY() - candidate.getY();
+            long distSq = dx * dx + dy * dy;
+
+            if (distSq <= maxDistSq && distSq < nearestDistSq) {
                 nearest = candidate;
-                nearestDist = dist;
+                nearestDistSq = distSq;
             }
         }
         return nearest;

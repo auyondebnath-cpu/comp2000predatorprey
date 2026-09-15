@@ -53,9 +53,9 @@ public abstract class Entity {
      public abstract void update(int panelWidth, int panelHeigth);
 
 
-     public boolean isNear(Entity other, int range){
+     public boolean isNear(Entity other, int range) {
       int dx = this.getX() - other.getX();
       int dy = this.getY() - other.getY();
-      return Math.sqrt(dx*dx + dy*dy)<=range;
-     }
+      return (dx * dx + dy * dy) <= (range * range);
+   }
 }
