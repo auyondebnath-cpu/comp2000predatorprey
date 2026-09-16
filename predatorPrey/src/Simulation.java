@@ -14,7 +14,7 @@ public class Simulation {
 
     private static final int PREDATOR_HUNT_RANGE = 200;
     private static final int PREY_FORAGE_RANGE = 100;
-    private static final int PREY_THREAT_RANGE = 200;
+    private static final int PREY_THREAT_RANGE = 100;
     private static final int EAT_RANGE = 35;
     private static final int PREY_SEPARATION_DIST = 15;
     private static final int PREDATOR_SEPARATION_DIST = 20;
