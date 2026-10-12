@@ -195,16 +195,25 @@ public class Simulation {
     }
 
     public void reset() {
+        tickCounter = 0;
+
         entities.clear();
         entities.addAll(initialEntities);
+
         for (Entity entity : entities) {
             entity.setX(entity.getOriginalX());
             entity.setY(entity.getOriginalY());
-            if (entity instanceof Creature c) {
-                c.resetState(100, entity.getOriginalX(), entity.getOriginalY());
+
+            if (entity instanceof Creature creature) {
+                creature.resetState(
+                    100,
+                    entity.getOriginalX(),
+                    entity.getOriginalY()
+                );
             }
-            if (entity instanceof Grass g) {
-                g.setEaten(false);
+
+            if (entity instanceof Grass grass) {
+                grass.resetState();
             }
         }
     }

@@ -25,6 +25,13 @@ public class Grass extends Entity {
         }
     }
 
+    public void resetState() {
+        isEaten = false;
+        ageInDays = 0;
+        markedForRemoval = false;
+    }
+
+
     public boolean isMarkedForRemoval() {
         return markedForRemoval;
     }
