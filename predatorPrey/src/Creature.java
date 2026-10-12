@@ -1,8 +1,6 @@
 public abstract class Creature extends Entity {
     private int speed;
     private int hunger;
-    private int dx =1;
-    private int dy =1;
     protected int energyMeter = 0;
     protected boolean fedToday = false;
     protected Entity target;
@@ -11,6 +9,7 @@ public abstract class Creature extends Entity {
     private int velocityX = 0;
     private int velocityY = 0;
     private boolean facingRight = true;
+    private MovementStrategy wanderStrategy = new WanderStrategy();
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
         super(x, y, isFood);
@@ -115,28 +114,8 @@ public abstract class Creature extends Entity {
     }
 
 
-    protected void moveWithBounce(int panelWidth, int panelHeight){
-        int groundTop = panelHeight/5;
-        int newX = getX() + dx*speed;
-        int newY = getY() + dy*speed;
-
-
-        if(newX<0 || newX>panelWidth-65){
-            dx = -dx;
-            newX = getX() + dx*speed;
-            newX = Math.max(0, Math.min(newX, panelWidth-65));
-        }
-
-
-        if(newY<groundTop || newY>panelHeight-65){
-            dy = -dy;
-            newY = getY() + dy*speed;
-            newY = Math.max(groundTop, Math.min(newY, panelHeight-65));
-        }
-
-        updateFacing(newX - getX());
-        setX(newX);
-        setY(newY);
+    protected void moveWithBounce(int panelWidth, int panelHeight) {
+        wanderStrategy.move(this, panelWidth, panelHeight);
     }
 
 
@@ -200,8 +179,7 @@ public abstract class Creature extends Entity {
         this.energyMeter = 0;
         this.fedToday = false;
         this.target = null;
-        this.dx = 1;
-        this.dy = 1;
+        this.wanderStrategy = new WanderStrategy();
         this.lastX = startX;
         this.lastY = startY;
         this.velocityX = 0;
