@@ -8,6 +8,8 @@ public abstract class Creature extends Entity {
     protected Entity target;
     private int lastX;
     private int lastY;
+    private int velocityX = 0;
+    private int velocityY = 0;
     private boolean facingRight = true;
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
@@ -92,17 +94,18 @@ public abstract class Creature extends Entity {
     }
 
 
-    public int getVelocityX(){
-        return getX() - lastX;
+    public int getVelocityX() {
+        return velocityX;
     }
 
-
-    public int getVelocityY(){
-        return getY() - lastY;
+    public int getVelocityY() {
+        return velocityY;
     }
 
+    public void finishMovementTick() {
+        velocityX = getX() - lastX;
+        velocityY = getY() - lastY;
 
-    protected void recordPosition(){
         lastX = getX();
         lastY = getY();
     }
@@ -201,6 +204,8 @@ public abstract class Creature extends Entity {
         this.dy = 1;
         this.lastX = startX;
         this.lastY = startY;
+        this.velocityX = 0;
+        this.velocityY = 0;
         this.facingRight = true;
     }   
 }

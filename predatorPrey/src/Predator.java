@@ -88,7 +88,6 @@ public class Predator extends Creature {
         } else {
             moveWithBounce(panelWidth, panelHeight);
         }
-        recordPosition();
     }
 
     @Override

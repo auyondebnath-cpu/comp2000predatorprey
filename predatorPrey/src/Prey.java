@@ -72,7 +72,6 @@ public class Prey extends Creature {
         } else{
             moveWithBounce(panelWidth, panelHeight);
         }
-        recordPosition();
     }
 
     @Override

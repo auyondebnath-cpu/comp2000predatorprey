@@ -87,6 +87,12 @@ public class Simulation {
         applySeparation(preyList, PREY_SEPARATION_DIST, width, height);
         applySeparation(predators, PREDATOR_SEPARATION_DIST, width, height);
 
+        for (Entity entity : entities) {
+            if (entity instanceof Creature creature) {
+                creature.finishMovementTick();
+            }
+        }
+
         Set<Prey> consumedPrey = new HashSet<>();
 
         for (Predator predator : predators) {
