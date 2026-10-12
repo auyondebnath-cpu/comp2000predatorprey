@@ -112,6 +112,10 @@ public class Simulation {
         }
 
         for (Prey prey : preyList) {
+            if (consumedPrey.contains(prey)) {
+                continue;
+            }
+
             for (Grass grass : grassList) {
                 if (prey.isNear(grass, EAT_RANGE) && grass.isEdible()) {
                     prey.setHunger(prey.getHunger() + 30);
