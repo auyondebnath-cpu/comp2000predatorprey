@@ -140,11 +140,6 @@ public abstract class Creature extends Entity {
         return fedToday;
     }
 
-
-    protected void moveWithBounce(int panelWidth, int panelHeight) {
-        wanderStrategy.move(this, panelWidth, panelHeight);
-    }
-
     public void moveInDirection(double diffX, double diffY, double movementSpeed, int panelWidth, int panelHeight) {
         double distance = Math.sqrt(diffX * diffX + diffY * diffY);
 

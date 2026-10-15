@@ -71,7 +71,8 @@ public class Prey extends Creature {
             setMovementStrategy(getSeekStrategy());
             performMovement(panelWidth, panelHeight);
         } else {
-            moveWithBounce(panelWidth, panelHeight);
+            setMovementStrategy(getWanderStrategy());
+            performMovement(panelWidth, panelHeight);
         }
     }
 
