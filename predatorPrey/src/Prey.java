@@ -63,13 +63,14 @@ public class Prey extends Creature {
     }
 
     @Override
-    public void update(int panelWidth, int panelHeight){
+    public void update(int panelWidth, int panelHeight) {
         if (fleeTicksRemaining > 0 && fleeTarget != null) {
             flee(fleeTarget, panelWidth, panelHeight);
             fleeTicksRemaining--;
         } else if (target != null) {
-            moveTowards(target, panelWidth, panelHeight);
-        } else{
+            setMovementStrategy(getSeekStrategy());
+            performMovement(panelWidth, panelHeight);
+        } else {
             moveWithBounce(panelWidth, panelHeight);
         }
     }

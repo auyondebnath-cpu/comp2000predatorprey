@@ -201,17 +201,6 @@ public abstract class Creature extends Entity {
         return Math.max(0, Math.min(x, panelWidth - 65));
     }
 
-
-    protected void moveTowards(Entity target, int panelWidth, int panelHeight) {
-        moveInDirection(
-            (double) target.getX() - getX(),
-            (double) target.getY() - getY(),
-            getSpeed(),
-            panelWidth,
-            panelHeight
-        );
-    }
-
     public void resetState(int startHunger, int startX, int startY) {
         validateHunger(startHunger);
         this.hunger = startHunger;

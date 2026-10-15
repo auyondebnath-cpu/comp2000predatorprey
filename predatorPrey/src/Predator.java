@@ -77,14 +77,15 @@ public class Predator extends Creature {
     }
 
     @Override
-    public void update(int panelWidth, int panelHeight){
+    public void update(int panelWidth, int panelHeight) {
         if (retreatTicksRemaining > 0) {
             retreat(panelWidth, panelHeight);
             retreatTicksRemaining--;
         } else if (target instanceof Prey c) {
             pursue(c, panelWidth, panelHeight);
         } else if (target != null) {
-            moveTowards(target, panelWidth, panelHeight);
+            setMovementStrategy(getSeekStrategy());
+            performMovement(panelWidth, panelHeight);
         } else {
             moveWithBounce(panelWidth, panelHeight);
         }
