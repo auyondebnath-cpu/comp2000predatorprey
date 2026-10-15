@@ -10,6 +10,8 @@ public abstract class Creature extends Entity {
     private int velocityY = 0;
     private boolean facingRight = true;
     private MovementStrategy wanderStrategy = new WanderStrategy();
+    private MovementStrategy movementStrategy = wanderStrategy;
+    private final MovementStrategy seekStrategy = new SeekStrategy();
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
         super(x, y, isFood);
@@ -43,6 +45,31 @@ public abstract class Creature extends Entity {
         this.speed = speed;
     }
 
+    public void setMovementStrategy(MovementStrategy movementStrategy) {
+    if (movementStrategy == null) {
+        throw new IllegalArgumentException(
+            "Movement strategy cannot be null"
+        );
+    }
+
+    this.movementStrategy = movementStrategy;
+}
+
+    protected void performMovement(int panelWidth, int panelHeight) {
+        movementStrategy.move(this, panelWidth, panelHeight);
+    }
+
+    protected MovementStrategy getWanderStrategy() {
+        return wanderStrategy;
+    }
+
+    protected MovementStrategy getSeekStrategy() {
+        return seekStrategy;
+    }
+
+    public Entity getTarget() {
+        return target;
+    }
 
     public int getHunger(){
         return hunger;
@@ -118,6 +145,34 @@ public abstract class Creature extends Entity {
         wanderStrategy.move(this, panelWidth, panelHeight);
     }
 
+    public void moveInDirection(double diffX, double diffY, double movementSpeed, int panelWidth, int panelHeight) {
+        double distance = Math.sqrt(diffX * diffX + diffY * diffY);
+
+        if (distance == 0) {
+            return;
+        }
+
+        double moveDistance = Math.min(movementSpeed, distance);
+        double stepX = (diffX / distance) * moveDistance;
+        double stepY = (diffY / distance) * moveDistance;
+
+        int moveX = (int) Math.round(stepX);
+        int moveY = (int) Math.round(stepY);
+
+        if (moveX == 0 && Math.abs(stepX) > 0.1) {
+            moveX = (int) Math.signum(stepX);
+        }
+
+        if (moveY == 0 && Math.abs(stepY) > 0.1) {
+            moveY = (int) Math.signum(stepY);
+        }
+
+        updateFacing(moveX);
+
+        setX(clampToWidth(getX() + moveX, panelWidth));
+        setY(clampToGround(getY() + moveY, panelHeight));
+    }
+
 
     public void onDayTick(){
         if(fedToday){
@@ -148,29 +203,13 @@ public abstract class Creature extends Entity {
 
 
     protected void moveTowards(Entity target, int panelWidth, int panelHeight) {
-        double diffX = target.getX() - getX();
-        double diffY = target.getY() - getY();
-        double distance = Math.sqrt(diffX * diffX + diffY * diffY);
-
-        if (distance == 0) {
-            return;
-        }
-
-        double moveDistance = Math.min(getSpeed(), distance);
-        double stepX = (diffX / distance) * moveDistance;
-        double stepY = (diffY / distance) * moveDistance;
-
-        // Round the decimal instead of directly casting to int to prevent truncation
-        int moveX = (int) Math.round(stepX);
-        int moveY = (int) Math.round(stepY);
-
-        // Enforce a minimum movement of 1 pixel if a fractional step exists
-        if (moveX == 0 && Math.abs(stepX) > 0.1) moveX = (int) Math.signum(stepX);
-        if (moveY == 0 && Math.abs(stepY) > 0.1) moveY = (int) Math.signum(stepY);
-
-        updateFacing(moveX);
-        setX(clampToWidth(getX() + moveX, panelWidth));
-        setY(clampToGround(getY()+moveY, panelHeight));
+        moveInDirection(
+            (double) target.getX() - getX(),
+            (double) target.getY() - getY(),
+            getSpeed(),
+            panelWidth,
+            panelHeight
+        );
     }
 
     public void resetState(int startHunger, int startX, int startY) {
@@ -180,6 +219,7 @@ public abstract class Creature extends Entity {
         this.fedToday = false;
         this.target = null;
         this.wanderStrategy = new WanderStrategy();
+        this.movementStrategy = this.wanderStrategy;
         this.lastX = startX;
         this.lastY = startY;
         this.velocityX = 0;
