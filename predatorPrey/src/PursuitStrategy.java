@@ -1,5 +1,5 @@
 public class PursuitStrategy implements MovementStrategy {
-    private static final double MAX_LOOK_AHEAD_TICKS = 10.0;
+    private static final double MAX_LOOK_AHEAD_TICKS = 0.0;
 
     @Override
     public void move(
