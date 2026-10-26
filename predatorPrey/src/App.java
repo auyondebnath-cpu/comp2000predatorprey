@@ -37,8 +37,10 @@ public class App {
         }
 
         simPanel.setEntities(sim.getEntities());
+        simPanel.setPopulation(sim.getPopulationBySpecies());
         Timer timer = new Timer(33, e -> {
             sim.tick();
+            simPanel.setPopulation(sim.getPopulationBySpecies());
             simPanel.repaint();
 
             long predatorCount = sim.getEntities().stream().filter(en -> en instanceof Predator).count();
@@ -47,6 +49,7 @@ public class App {
             if (predatorCount == 0 && preyCount == 0) {
                 ((Timer) e.getSource()).stop();
                 simPanel.setSimulationOver(true);
+                simPanel.setPopulation(sim.getPopulationBySpecies());
                 simPanel.repaint();
             }
         });
@@ -61,6 +64,7 @@ public class App {
             timer.stop();
             sim.reset();
             simPanel.setSimulationOver(false);
+            simPanel.setPopulation(sim.getPopulationBySpecies());
             simPanel.repaint();
         });
 
