@@ -45,7 +45,7 @@ public abstract class Creature extends Entity {
         this.speed = speed;
     }
 
-    public void setMovementStrategy(MovementStrategy movementStrategy) {
+    private void setMovementStrategy(MovementStrategy movementStrategy) {
     if (movementStrategy == null) {
         throw new IllegalArgumentException(
             "Movement strategy cannot be null"
@@ -58,6 +58,14 @@ public abstract class Creature extends Entity {
     protected void performMovement(int panelWidth, int panelHeight) {
         movementStrategy.move(this, panelWidth, panelHeight);
     }
+
+    @Override
+    public final void update(int panelWidth, int panelHeight) {
+        setMovementStrategy(chooseMovementStrategy());
+        performMovement(panelWidth, panelHeight);
+    }
+
+    protected abstract MovementStrategy chooseMovementStrategy();
 
     protected MovementStrategy getWanderStrategy() {
         return wanderStrategy;
@@ -209,5 +217,5 @@ public abstract class Creature extends Entity {
         this.velocityX = 0;
         this.velocityY = 0;
         this.facingRight = true;
-    }   
+    }
 }

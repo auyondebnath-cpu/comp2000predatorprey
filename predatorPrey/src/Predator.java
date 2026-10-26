@@ -32,21 +32,16 @@ public class Predator extends Creature {
     }
 
     @Override
-    public void update(int panelWidth, int panelHeight) {
+    protected MovementStrategy chooseMovementStrategy() {
         if (retreatTicksRemaining > 0) {
-            setMovementStrategy(retreatStrategy);
-            performMovement(panelWidth, panelHeight);
             retreatTicksRemaining--;
+            return retreatStrategy;
         } else if (target instanceof Prey) {
-            setMovementStrategy(pursuitStrategy);
-            performMovement(panelWidth, panelHeight);
+            return pursuitStrategy;
         } else if (target != null) {
-            setMovementStrategy(getSeekStrategy());
-            performMovement(panelWidth, panelHeight);
-        } else {
-            setMovementStrategy(getWanderStrategy());
-            performMovement(panelWidth, panelHeight);
+            return getSeekStrategy();
         }
+        return getWanderStrategy();
     }
 
     @Override
