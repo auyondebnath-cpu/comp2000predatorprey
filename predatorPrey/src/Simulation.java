@@ -34,22 +34,12 @@ public class Simulation {
         initialEntities.add(entity);
     }
 
-    public void tick() {
-        List<Prey> preyList = entities.stream()
-            .filter(e -> e instanceof Prey)
-            .map(e -> (Prey) e)
-            .toList();
+    public void tick() {     
+        List<Prey> preyList = entities.stream().filter(e -> e instanceof Prey).map(e -> (Prey) e).toList();
 
-        List<Predator> predators = entities.stream()
-            .filter(e -> e instanceof Predator)
-            .map(e -> (Predator) e)
-            .toList();
+        List<Predator> predators = entities.stream().filter(e -> e instanceof Predator).map(e -> (Predator) e).toList();
 
-        List<Grass> grassList = entities.stream()
-            .filter(e -> e instanceof Grass)
-            .map(e -> (Grass) e)
-            .filter(Grass::isEdible)
-            .toList();
+        List<Grass> grassList = entities.stream().filter(e -> e instanceof Grass).map(e -> (Grass) e).filter(Grass::isEdible).toList();
 
         List<Prey> availablePrey = new ArrayList<>(preyList);
 

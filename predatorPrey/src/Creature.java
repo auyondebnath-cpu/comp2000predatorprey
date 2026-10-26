@@ -1,8 +1,6 @@
 public abstract class Creature extends Entity {
     private int speed;
     private int hunger;
-    private int dx =1;
-    private int dy =1;
     protected int energyMeter = 0;
     protected boolean fedToday = false;
     protected Entity target;
@@ -11,6 +9,9 @@ public abstract class Creature extends Entity {
     private int velocityX = 0;
     private int velocityY = 0;
     private boolean facingRight = true;
+    private MovementStrategy wanderStrategy = new WanderStrategy();
+    private MovementStrategy movementStrategy = wanderStrategy;
+    private final MovementStrategy seekStrategy = new SeekStrategy();
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
         super(x, y, isFood);
@@ -44,6 +45,39 @@ public abstract class Creature extends Entity {
         this.speed = speed;
     }
 
+    private void setMovementStrategy(MovementStrategy movementStrategy) {
+    if (movementStrategy == null) {
+        throw new IllegalArgumentException(
+            "Movement strategy cannot be null"
+        );
+    }
+
+    this.movementStrategy = movementStrategy;
+}
+
+    protected void performMovement(int panelWidth, int panelHeight) {
+        movementStrategy.move(this, panelWidth, panelHeight);
+    }
+
+    @Override
+    public final void update(int panelWidth, int panelHeight) {
+        setMovementStrategy(chooseMovementStrategy());
+        performMovement(panelWidth, panelHeight);
+    }
+
+    protected abstract MovementStrategy chooseMovementStrategy();
+
+    protected MovementStrategy getWanderStrategy() {
+        return wanderStrategy;
+    }
+
+    protected MovementStrategy getSeekStrategy() {
+        return seekStrategy;
+    }
+
+    public Entity getTarget() {
+        return target;
+    }
 
     public int getHunger(){
         return hunger;
@@ -114,29 +148,32 @@ public abstract class Creature extends Entity {
         return fedToday;
     }
 
+    public void moveInDirection(double diffX, double diffY, double movementSpeed, int panelWidth, int panelHeight) {
+        double distance = Math.sqrt(diffX * diffX + diffY * diffY);
 
-    protected void moveWithBounce(int panelWidth, int panelHeight){
-        int groundTop = panelHeight/5;
-        int newX = getX() + dx*speed;
-        int newY = getY() + dy*speed;
-
-
-        if(newX<0 || newX>panelWidth-65){
-            dx = -dx;
-            newX = getX() + dx*speed;
-            newX = Math.max(0, Math.min(newX, panelWidth-65));
+        if (distance == 0) {
+            return;
         }
 
+        double moveDistance = Math.min(movementSpeed, distance);
+        double stepX = (diffX / distance) * moveDistance;
+        double stepY = (diffY / distance) * moveDistance;
 
-        if(newY<groundTop || newY>panelHeight-65){
-            dy = -dy;
-            newY = getY() + dy*speed;
-            newY = Math.max(groundTop, Math.min(newY, panelHeight-65));
+        int moveX = (int) Math.round(stepX);
+        int moveY = (int) Math.round(stepY);
+
+        if (moveX == 0 && Math.abs(stepX) > 0.1) {
+            moveX = (int) Math.signum(stepX);
         }
 
-        updateFacing(newX - getX());
-        setX(newX);
-        setY(newY);
+        if (moveY == 0 && Math.abs(stepY) > 0.1) {
+            moveY = (int) Math.signum(stepY);
+        }
+
+        updateFacing(moveX);
+
+        setX(clampToWidth(getX() + moveX, panelWidth));
+        setY(clampToGround(getY() + moveY, panelHeight));
     }
 
 
@@ -167,45 +204,18 @@ public abstract class Creature extends Entity {
         return Math.max(0, Math.min(x, panelWidth - 65));
     }
 
-
-    protected void moveTowards(Entity target, int panelWidth, int panelHeight) {
-        double diffX = target.getX() - getX();
-        double diffY = target.getY() - getY();
-        double distance = Math.sqrt(diffX * diffX + diffY * diffY);
-
-        if (distance == 0) {
-            return;
-        }
-
-        double moveDistance = Math.min(getSpeed(), distance);
-        double stepX = (diffX / distance) * moveDistance;
-        double stepY = (diffY / distance) * moveDistance;
-
-        // Round the decimal instead of directly casting to int to prevent truncation
-        int moveX = (int) Math.round(stepX);
-        int moveY = (int) Math.round(stepY);
-
-        // Enforce a minimum movement of 1 pixel if a fractional step exists
-        if (moveX == 0 && Math.abs(stepX) > 0.1) moveX = (int) Math.signum(stepX);
-        if (moveY == 0 && Math.abs(stepY) > 0.1) moveY = (int) Math.signum(stepY);
-
-        updateFacing(moveX);
-        setX(clampToWidth(getX() + moveX, panelWidth));
-        setY(clampToGround(getY()+moveY, panelHeight));
-    }
-
     public void resetState(int startHunger, int startX, int startY) {
         validateHunger(startHunger);
         this.hunger = startHunger;
         this.energyMeter = 0;
         this.fedToday = false;
         this.target = null;
-        this.dx = 1;
-        this.dy = 1;
+        this.wanderStrategy = new WanderStrategy();
+        this.movementStrategy = this.wanderStrategy;
         this.lastX = startX;
         this.lastY = startY;
         this.velocityX = 0;
         this.velocityY = 0;
         this.facingRight = true;
-    }   
+    }
 }
