@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -10,10 +11,13 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
 public class SimulationPanel extends JPanel {
     private List<Entity> entities = new ArrayList<>();
 
+
     private static final int ICON_SIZE = 65;
+
 
     private final Image predatorIcon = loadAnimatedIcon("predatorPrey/resources/tiger.gif");
     private final Image preyIcon = loadAnimatedIcon("predatorPrey/resources/deer.gif");
@@ -21,16 +25,32 @@ public class SimulationPanel extends JPanel {
     private final Image backgroundImage = loadBackground("predatorPrey/resources/background.jpg");
     private final Image gameOverImage = loadBackground("predatorPrey/resources/OVER.png");
 
+
     private boolean simulationOver = false;
+    private boolean showStats = false;
     private Map<String, Long> population = Map.of();
+    private Map<String, HungerSummary> hunger = Map.of();
+
 
     public void setSimulationOver(boolean simulationOver) {
         this.simulationOver = simulationOver;
     }
 
+
+    public void setShowStats(boolean showStats) {
+        this.showStats = showStats;
+    }
+
+
     public void setPopulation(Map<String, Long> population) {
         this.population = population;
     }
+
+
+    public void setHunger(Map<String, HungerSummary> hunger) {
+        this.hunger = hunger;
+    }
+
 
     private Image loadAnimatedIcon(String path) {
         try {
@@ -45,6 +65,7 @@ public class SimulationPanel extends JPanel {
         }
     }
 
+
     private Image loadStaticIcon(String path, int size) {
         Image result = null;
         try {
@@ -58,9 +79,11 @@ public class SimulationPanel extends JPanel {
         return result;
     }
 
+
     public void setEntities(List<Entity> entities) {
         this.entities = entities;
     }
+
 
     private Image loadBackground(String path) {
         Image result = null;
@@ -72,10 +95,12 @@ public class SimulationPanel extends JPanel {
         return result;
     }
 
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+
 
         if (backgroundImage != null) {
             g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
@@ -83,6 +108,7 @@ public class SimulationPanel extends JPanel {
             g2d.setColor(new Color(200, 230, 200));
             g2d.fillRect(0, 0, getWidth(), getHeight());
         }
+
 
         for (Entity entity : entities) {
             Image icon;
@@ -109,11 +135,13 @@ public class SimulationPanel extends JPanel {
                 fallbackColor = Color.BLACK;
             }
 
+
             if (simulationOver && gameOverImage != null) {
                 int x = (getWidth() - 300) / 2;
                 int y = (getHeight() - 300) / 2;
                 g2d.drawImage(gameOverImage, x, y, this);
             }
+
 
             if (icon != null) {
                 drawFacingImage(g2d, icon, entity.getX(), entity.getY(), size, facingRight);
@@ -123,6 +151,7 @@ public class SimulationPanel extends JPanel {
             }
         }
 
+
         int lineY = 28;
         g2d.setColor(new Color(0, 0, 0, 150));
         g2d.fillRoundRect(8, 8, 150, 14 + 18 * Math.max(1, population.size()), 10, 10);
@@ -131,7 +160,35 @@ public class SimulationPanel extends JPanel {
             g2d.drawString(entry.getKey() + ": " + entry.getValue(), 16, lineY);
             lineY += 18;
         }
+
+
+        if (showStats) {
+            FontMetrics fm = g2d.getFontMetrics();
+            int boxWidth = 120;
+            List<String> lines = new ArrayList<>();
+            for (Map.Entry<String, HungerSummary> entry : hunger.entrySet()) {
+                String line = entry.getKey() + " hunger: " + entry.getValue();
+                lines.add(line);
+                boxWidth = Math.max(boxWidth, fm.stringWidth(line) + 16);
+            }
+
+
+            int boxHeight = 14 + 18 * Math.max(1, lines.size());
+            int boxX = getWidth() - boxWidth - 8;
+            int boxY = 8;
+
+
+            g2d.setColor(new Color(0, 0, 0, 150));
+            g2d.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 10, 10);
+            g2d.setColor(Color.WHITE);
+            int hungerLineY = boxY + 20;
+            for (String line : lines) {
+                g2d.drawString(line, boxX + 8, hungerLineY);
+                hungerLineY += 18;
+            }
+        }
     }
+
 
     private void drawFacingImage(Graphics2D g2d, Image icon, int x, int y, int size, boolean facingRight) {
         if (facingRight) {
@@ -139,6 +196,7 @@ public class SimulationPanel extends JPanel {
         } else {
             g2d.drawImage(icon, x + size, y, -size, size, this);
         }
+
 
 
         if (simulationOver && gameOverImage != null) {

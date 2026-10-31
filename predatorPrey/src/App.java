@@ -2,14 +2,17 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.*;
 
+
 public class App {
     public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame("Predator-Prey Simulation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+
         int[] counts = askEntityCounts(frame);
         int numPredators = counts[0];
         int numPrey = counts[1];
+
 
         SimulationPanel simPanel = new SimulationPanel();
         Simulation sim = new Simulation(simPanel);
@@ -36,23 +39,30 @@ public class App {
             System.err.println("Entity setup attempt complete. Current entity count: " + sim.getEntities().size());
         }
 
+
         simPanel.setEntities(sim.getEntities());
         simPanel.setPopulation(sim.getPopulationBySpecies());
+        simPanel.setHunger(sim.getHungerBySpecies());
         Timer timer = new Timer(33, e -> {
             sim.tick();
             simPanel.setPopulation(sim.getPopulationBySpecies());
+            simPanel.setHunger(sim.getHungerBySpecies());
             simPanel.repaint();
+
 
             long predatorCount = sim.getEntities().stream().filter(en -> en instanceof Predator).count();
             long preyCount = sim.getEntities().stream().filter(en -> en instanceof Prey).count();
+
 
             if (predatorCount == 0 && preyCount == 0) {
                 ((Timer) e.getSource()).stop();
                 simPanel.setSimulationOver(true);
                 simPanel.setPopulation(sim.getPopulationBySpecies());
+                simPanel.setHunger(sim.getHungerBySpecies());
                 simPanel.repaint();
             }
         });
+
 
 
         JButton startButton = new JButton("Start");
@@ -65,26 +75,38 @@ public class App {
             sim.reset();
             simPanel.setSimulationOver(false);
             simPanel.setPopulation(sim.getPopulationBySpecies());
+            simPanel.setHunger(sim.getHungerBySpecies());
             simPanel.repaint();
         });
+        JToggleButton statsButton = new JToggleButton("Stats");
+        statsButton.addActionListener(e -> {
+            simPanel.setShowStats(statsButton.isSelected());
+            simPanel.repaint();
+        });
+
 
         JPanel controlPanel = new JPanel();
         controlPanel.add(startButton);
         controlPanel.add(pauseButton);
         controlPanel.add(resetButton);
+        controlPanel.add(statsButton);
+
 
         frame.setLayout(new BorderLayout());
         frame.add(simPanel, BorderLayout.CENTER);
         frame.add(controlPanel, BorderLayout.SOUTH);
+
 
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
+
     private static int[] askEntityCounts(JFrame parent) {
         JSpinner predatorSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 5, 1));
         JSpinner preySpinner = new JSpinner(new SpinnerNumberModel(4, 0, 20, 1));
+
 
         JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
         panel.add(new JLabel("Number of predators (Max 5):"));
@@ -92,12 +114,15 @@ public class App {
         panel.add(new JLabel("Number of prey (Max 20):"));
         panel.add(preySpinner);
 
+
         int result = JOptionPane.showConfirmDialog(parent, panel, "Simulation Setup",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
 
         if (result != JOptionPane.OK_OPTION) {
             System.exit(0);
         }
+
 
         int predators = (Integer) predatorSpinner.getValue();
         int prey = (Integer) preySpinner.getValue();
