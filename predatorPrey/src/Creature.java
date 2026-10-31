@@ -11,7 +11,16 @@ public abstract class Creature extends Entity {
     private boolean facingRight = true;
     private MovementStrategy wanderStrategy = new WanderStrategy();
     private MovementStrategy movementStrategy = wanderStrategy;
-    private final MovementStrategy seekStrategy = new SeekStrategy();
+    private final MovementStrategy seekStrategy = (creature, w, h) -> {
+        Entity t = creature.getTarget();
+        if (t == null) {
+            return;
+        }
+        creature.moveInDirection(
+            (double) t.getX() - creature.getX(),
+            (double) t.getY() - creature.getY(),
+            creature.getSpeed(), w, h);
+    };
 
     public Creature(int speed, int hunger, boolean isFood, int x, int y) {
         super(x, y, isFood);
