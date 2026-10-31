@@ -18,11 +18,12 @@ public class RetreatStrategy implements MovementStrategy {
             int panelWidth,
             int panelHeight) {
 
-        int moveX = directionX * creature.getSpeed();
-        int moveY = directionY * creature.getSpeed();
-
-        creature.updateFacing(moveX);
-        creature.setX(creature.clampToWidth(creature.getX() + moveX, panelWidth));
-        creature.setY(creature.clampToGround(creature.getY() + moveY, panelHeight));
+        creature.moveInDirection(
+            directionX * creature.getSpeed(),
+            directionY * creature.getSpeed(),
+            creature.getSpeed(),
+            panelWidth,
+            panelHeight
+        );
     }
 }

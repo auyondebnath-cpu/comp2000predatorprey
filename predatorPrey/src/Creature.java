@@ -1,4 +1,5 @@
 public abstract class Creature extends Entity {
+    private static final int HUNGER_LOSS_PER_DAY = 25;
     private int speed;
     private int hunger;
     protected int energyMeter = 0;
@@ -32,7 +33,6 @@ public abstract class Creature extends Entity {
         this.lastY = y;
     }
 
-
     public int getSpeed(){
         return speed;
     }
@@ -55,14 +55,13 @@ public abstract class Creature extends Entity {
     }
 
     private void setMovementStrategy(MovementStrategy movementStrategy) {
-    if (movementStrategy == null) {
-        throw new IllegalArgumentException(
-            "Movement strategy cannot be null"
-        );
+        if (movementStrategy == null) {
+            throw new IllegalArgumentException(
+                "Movement strategy cannot be null"
+            );
+        }
+        this.movementStrategy = movementStrategy;
     }
-
-    this.movementStrategy = movementStrategy;
-}
 
     protected void performMovement(int panelWidth, int panelHeight) {
         movementStrategy.move(this, panelWidth, panelHeight);
@@ -92,7 +91,6 @@ public abstract class Creature extends Entity {
         return hunger;
     }
 
-
     public void setHunger(int hunger){
         validateHunger(hunger);
         this.hunger = hunger;
@@ -102,11 +100,9 @@ public abstract class Creature extends Entity {
         this.fedToday = fedToday;
     }
 
-
     public boolean isStarved(int deathThreshold){
         return energyMeter <= deathThreshold;
     }
-
 
     private void validateSpeed(int speed){
         if(speed <=0){
@@ -114,23 +110,19 @@ public abstract class Creature extends Entity {
         }
     }
 
-
     private void validateHunger(int hunger){
         if(hunger<0){
             throw new InvalidCreatureStateException("Hunger cannot be negative, got: "+ hunger);
         }
     }
 
-
     public boolean isDead(){
         return hunger <= 0;
     }
 
-
     protected void depleteHunger(){
-        hunger--;
+        hunger = Math.max(0, hunger - HUNGER_LOSS_PER_DAY);
     }
-
 
     public void setTarget (Entity target){
         this.target = target;
@@ -148,7 +140,6 @@ public abstract class Creature extends Entity {
     public void finishMovementTick() {
         velocityX = getX() - lastX;
         velocityY = getY() - lastY;
-
         lastX = getX();
         lastY = getY();
     }
@@ -180,13 +171,13 @@ public abstract class Creature extends Entity {
         }
 
         updateFacing(moveX);
-
         setX(clampToWidth(getX() + moveX, panelWidth));
         setY(clampToGround(getY() + moveY, panelHeight));
     }
 
-
+    @Override
     public void onDayTick(){
+        depleteHunger();
         if(fedToday){
             energyMeter++;
         } else {
@@ -194,7 +185,6 @@ public abstract class Creature extends Entity {
         }
         fedToday = false;
     }
-
 
     public boolean shouldReproduce (int reproduceThreshold){
         if(energyMeter >= reproduceThreshold){

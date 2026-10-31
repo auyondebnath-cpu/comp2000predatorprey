@@ -1,5 +1,5 @@
 public class PursuitStrategy implements MovementStrategy {
-    private static final double MAX_LOOK_AHEAD_TICKS = 0.0;
+    private static final double MAX_LOOK_AHEAD_TICKS = 10.0;
 
     @Override
     public void move(
@@ -24,10 +24,8 @@ public class PursuitStrategy implements MovementStrategy {
             MAX_LOOK_AHEAD_TICKS
         );
 
-        int predictedX = target.getX()
-            + (int) (target.getVelocityX() * lookAheadTicks);
-        int predictedY = target.getY()
-            + (int) (target.getVelocityY() * lookAheadTicks);
+        int predictedX = target.getX() + (int) (target.getVelocityX() * lookAheadTicks);
+        int predictedY = target.getY() + (int) (target.getVelocityY() * lookAheadTicks);
 
         creature.moveInDirection(
             (double) predictedX - creature.getX(),
