@@ -36,10 +36,8 @@ public class Predator extends Creature {
         if (retreatTicksRemaining > 0) {
             retreatTicksRemaining--;
             return retreatStrategy;
-        } else if (target instanceof Prey) {
-            return pursuitStrategy;
         } else if (target != null) {
-            return getSeekStrategy();
+            return pursuitStrategy;
         }
         return getWanderStrategy();
     }
