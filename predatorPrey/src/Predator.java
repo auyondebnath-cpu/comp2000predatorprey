@@ -16,7 +16,7 @@ public class Predator extends Creature {
 
     @Override
     public boolean shouldBeRemoved() {
-        return isStarved(-5);
+        return isDead() || isStarved(-5);
     }
 
     @Override

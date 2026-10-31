@@ -39,7 +39,7 @@ public class Prey extends Creature {
 
     @Override
     public boolean shouldBeRemoved() {
-        return isStarved(-4);
+        return isDead() || isStarved(-4);
     }
 
     @Override
