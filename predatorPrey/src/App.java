@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.Map;
 import javax.swing.*;
 
 
@@ -45,16 +46,13 @@ public class App {
         simPanel.setHunger(sim.getHungerBySpecies());
         Timer timer = new Timer(33, e -> {
             sim.tick();
-            simPanel.setPopulation(sim.getPopulationBySpecies());
+            Map<String, Long> pop = sim.getPopulationBySpecies();
+            simPanel.setPopulation(pop);
             simPanel.setHunger(sim.getHungerBySpecies());
             simPanel.repaint();
 
 
-            long predatorCount = sim.getEntities().stream().filter(en -> en instanceof Predator).count();
-            long preyCount = sim.getEntities().stream().filter(en -> en instanceof Prey).count();
-
-
-            if (predatorCount == 0 && preyCount == 0) {
+            if (pop.getOrDefault("Predator", 0L) == 0 && pop.getOrDefault("Prey", 0L) == 0) {
                 ((Timer) e.getSource()).stop();
                 simPanel.setSimulationOver(true);
                 simPanel.setPopulation(sim.getPopulationBySpecies());
@@ -122,7 +120,6 @@ public class App {
         if (result != JOptionPane.OK_OPTION) {
             System.exit(0);
         }
-
 
         int predators = (Integer) predatorSpinner.getValue();
         int prey = (Integer) preySpinner.getValue();
