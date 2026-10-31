@@ -55,7 +55,7 @@ public class Simulation {
 
 
     public Map<String, HungerSummary> getHungerBySpecies() {
-        return entities.stream()
+        return entities.parallelStream()
             .filter(e -> e instanceof Creature)
             .map(Creature.class::cast)
             .collect(Collectors.groupingBy(
